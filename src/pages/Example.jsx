@@ -2,11 +2,12 @@ import {useEffect, useState} from "react";
 import api from "../api/axios";
 import {Link} from "react-router-dom";
 
-export default function MovieList() {
+export default function Example() {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
+    // fetch api example
     useEffect(() => {
         api.get("/movies")
             .then(res => {
