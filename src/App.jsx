@@ -1,10 +1,11 @@
 import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "@/pages/Home.jsx";
-import MovieList from "@/pages/MovieList.jsx"; // ✅ sửa đúng tên component
-import Login from "@/pages/Login.jsx";
+import Example from "@/pages/Example.jsx";
+import Login from "@/components/Login.jsx";
 import NotFound from "@/pages/NotFound.jsx";
-import Header from "@/components/Header.jsx";
+import HeaderBar from "@/components/HeaderBar.jsx";
 import UserList from "@/pages/UserList.jsx";
+import TestPaymentPage from "@/pages/TestPaymentPage.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -12,10 +13,13 @@ export default function App() {
 
     return (
         <>
-            {!hideHeaderRoutes.includes(location.pathname) && <Header />}
+            {/*<Example/>*/}
+            {/*<TestPaymentPage />*/}
+
+            {!hideHeaderRoutes.includes(location.pathname) && <HeaderBar />}
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/movies" element={<MovieList />} />
+                <Route path="/exmaple" element={<Example />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/users" element={<UserList />} />
                 <Route path="*" element={<NotFound />} />
