@@ -21,6 +21,7 @@ export default function Login() {
     };
 
     return (
+
         <Modal>
             <form onSubmit={handleSubmit}>
                 <h2>Login</h2>
