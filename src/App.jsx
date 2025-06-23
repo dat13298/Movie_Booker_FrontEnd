@@ -6,10 +6,11 @@ import NotFound from "@/pages/NotFound.jsx";
 import HeaderBar from "@/components/HeaderBar.jsx";
 import UserList from "@/pages/UserList.jsx";
 import TestPaymentPage from "@/pages/TestPaymentPage.jsx";
+import VnpayReturn from "@/pages/VnpayReturn.jsx";
 
 export default function App() {
     const location = useLocation();
-    const hideHeaderRoutes = ["/login"];
+    const hideHeaderRoutes = ["/login","/vnpay-return"];
 
     return (
         <>
@@ -22,6 +23,7 @@ export default function App() {
                 <Route path="/exmaple" element={<Example />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/users" element={<UserList />} />
+                <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>
