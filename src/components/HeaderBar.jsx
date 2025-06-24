@@ -170,12 +170,17 @@ const HeaderBar = () => {
             <MobileDrawer
                 visible={mobileDrawerVisible}
                 onClose={() => setMobileDrawerVisible(false)}
-                onLoginClick={() => {
+                onLoginClick={(type) => {
                     setMobileDrawerVisible(false);
-                    setLoginModalVisible(true);
+                    if (type === 'login') {
+                        setLoginModalVisible(true);
+                    } else if (type === 'register') {
+                        setRegisterModalVisible(true);
+                    }
                 }}
                 onLogout={handleLogout}
             />
+
         </>
     );
 };
