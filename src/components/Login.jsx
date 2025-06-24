@@ -1,47 +1,110 @@
-import { useState } from "react";
-import api from "../api/axios.js";
-import { useNavigate } from "react-router-dom";
-import {Modal} from "antd";
+import React, {useContext} from "react";
+import { Modal, Input, Button, Typography, Form, message } from "antd";
+import {LockOutlined, UserOutlined} from "@ant-design/icons";
+import api from "../api/axios";
+import 'antd/dist/reset.css';
+import "../index.css";
+import {AuthContext} from "@/auth/AuthProvider.jsx";
 
-export default function Login() {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+const { Title, Text } = Typography;
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegister }) {
+    const { updateAuth } = useContext(AuthContext);
+    const [form] = Form.useForm();
+
+    const handleSubmit = async (values) => {
         try {
-            const res = await api.post("/auth/login", { username, password });
-            localStorage.setItem("access_token", res.data.accessToken);
-            localStorage.setItem("refresh_token", res.data.refreshToken);
-            navigate("/");
+            const res = await api.post("/auth/login", {
+                username: values.username,
+                password: values.password,
+            });
+            const { accessToken, refreshToken } = res.data;
+
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+
+            updateAuth({ accessToken, refreshToken }); // cập nhật context
+
+            message.success("Đăng nhập thành công!");
+            onLoginSuccess?.();
+            onClose();
+
         } catch (err) {
-            alert("Login failed!");
+            message.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
         }
     };
 
     return (
+        <Modal
+            open={open}
+            onCancel={onClose}
+            footer={null}
+            centered
+            closable
+            className="custom-login-modal"
+        >
+            <Form
+                form={form}
+                onFinish={handleSubmit}
+                layout="vertical"
+                className="login-form"
+            >
+                <Title level={4} className="login-title">Đăng nhập</Title>
 
-        <Modal>
-            <form onSubmit={handleSubmit}>
-                <h2>Login</h2>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                    required
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
+                <Form.Item
+                    name="username"
+                    label="Tên tài khoản"
+                    className="login-input"
+                    rules={[
+                        { required: true, message: "Vui lòng nhập tên tài khoản" },
+                        { type: "username", message: "Tên tài khoản không hợp lệ" },
+                    ]}
+                >
+                    <Input
+                        prefix={<UserOutlined />}
+                        placeholder="Tên tài khoản"
+                        size="large"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    name="password"
+                    label="Mật khẩu"
+                    className="login-input"
+                    rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
+                >
+                    <Input.Password
+                        prefix={<LockOutlined />}
+                        placeholder="Mật khẩu"
+                        size="large"
+                    />
+                </Form.Item>
+
+                <div className="login-actions">
+                    <Text type="danger" className="forgot-password">Quên mật khẩu?</Text>
+                </div>
+
+                <Button
+                    htmlType="submit"
+                    size="large"
+                    className="login-submit"
+                    block
+                >
+                    Đăng nhập
+                </Button>
+
+                <div className="login-footer">
+                    <Text>Bạn chưa có tài khoản? </Text>
+                    <a
+                        onClick={() => {
+                            onClose();
+                            onSwitchToRegister?.();
+                        }}
+                    >
+                        Đăng ký
+                    </a>
+                </div>
+            </Form>
         </Modal>
-
     );
 }

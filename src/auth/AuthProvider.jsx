@@ -1,27 +1,48 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-        return { accessToken, refreshToken };
+    const [auth, setAuth] = useState({
+        accessToken: null,
+        refreshToken: null,
     });
 
-    const updateAuth = (accessToken, refreshToken) => {
+    const [isSessionExpired, setIsSessionExpired] = useState(false);
+
+    // ✅ Load token từ localStorage khi load lại trang
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (accessToken && refreshToken) {
+            setAuth({ accessToken, refreshToken });
+        }
+    }, []);
+
+    useEffect(() => {
+        if (window.isSessionExpired) {
+            setIsSessionExpired(true);
+        }
+    }, []);
+
+    const updateAuth = ({ accessToken, refreshToken }) => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
+        window.isSessionExpired = false;
+        setIsSessionExpired(false);
         setAuth({ accessToken, refreshToken });
     };
 
     const logout = () => {
         localStorage.clear();
         setAuth({ accessToken: null, refreshToken: null });
+        window.isSessionExpired = false;
+        window.location.reload();
     };
 
     return (
-        <AuthContext.Provider value={{ auth, updateAuth, logout }}>
+        <AuthContext.Provider value={{ auth, updateAuth, logout, isSessionExpired }}>
             {children}
         </AuthContext.Provider>
     );
