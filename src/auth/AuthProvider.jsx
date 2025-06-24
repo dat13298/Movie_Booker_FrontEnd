@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
 
     const [isSessionExpired, setIsSessionExpired] = useState(false);
 
-    // ✅ Load token từ localStorage khi load lại trang
     useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
         const refreshToken = localStorage.getItem("refreshToken");
