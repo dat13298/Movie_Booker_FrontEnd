@@ -7,6 +7,7 @@ import HeaderBar from "@/components/HeaderBar.jsx";
 import UserList from "@/pages/UserList.jsx";
 import TestPaymentPage from "@/pages/TestPaymentPage.jsx";
 import VnpayReturn from "@/pages/VnpayReturn.jsx";
+import Footer from "@/components/Footer.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -26,6 +27,7 @@ export default function App() {
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
+            {!hideHeaderRoutes.includes(location.pathname) && <Footer />}
         </>
     );
 }
