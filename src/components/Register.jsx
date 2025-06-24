@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
     Modal,
     Input,
@@ -19,6 +19,13 @@ const { Option } = Select;
 
 export default function Register({ open, onClose, onSwitchToLogin }) {
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (!open) {
+            form.resetFields();
+        }
+    }, [open]);
+
 
     const handleSubmit = async (values) => {
         const payload = {

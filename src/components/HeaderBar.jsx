@@ -5,6 +5,7 @@ import MobileDrawer from './MobileDrawer';
 import Login from './Login';
 import Register from './Register';
 import {AuthContext} from '../auth/AuthProvider.jsx';
+import ForgotPassword from "@/components/ForgotPassword.jsx";
 
 const { useBreakpoint } = Grid;
 
@@ -14,6 +15,7 @@ const HeaderBar = () => {
     const [loginModalVisible, setLoginModalVisible] = useState(false);
     const { auth, updateAuth } = useContext(AuthContext);
     const [registerModalVisible, setRegisterModalVisible] = useState(false);
+    const [isForgotOpen, setForgotOpen] = useState(false);
 
     const handleDrawer = () => setVisible(true);
     const handleClose = () => setVisible(false);
@@ -25,6 +27,10 @@ const HeaderBar = () => {
     };
     const isLoggedIn = !!auth?.accessToken;
 
+    const handleBackToLogin = () => {
+        setForgotOpen(false);
+        setLoginModalVisible(true);
+    };
     return (
         <>
             <div style={{ background: '#fff', padding: '12px 16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
@@ -101,7 +107,12 @@ const HeaderBar = () => {
                     setLoginModalVisible(false);
                     setRegisterModalVisible(true);
                 }}
+                onForgotPassword={() => {
+                    setLoginModalVisible(false);
+                    setForgotOpen(true);
+                }}
             />
+
             <Register
                 open={registerModalVisible}
                 onClose={() => setRegisterModalVisible(false)}
@@ -110,7 +121,14 @@ const HeaderBar = () => {
                     setLoginModalVisible(true);
                 }}
             />
-
+            <ForgotPassword
+                open={isForgotOpen}
+                onClose={() => {
+                    setForgotOpen(false);
+                    setLoginModalVisible(true);
+                }}
+                onBackToLogin={handleBackToLogin}
+            />
         </>
     );
 };

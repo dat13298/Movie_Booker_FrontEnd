@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import { Modal, Input, Button, Typography, Form, message } from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import api from "../api/axios";
@@ -8,9 +8,16 @@ import {AuthContext} from "@/auth/AuthProvider.jsx";
 
 const { Title, Text } = Typography;
 
-export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegister }) {
+export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegister, onForgotPassword }) {
+
     const { updateAuth } = useContext(AuthContext);
     const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (!open) {
+            form.resetFields();
+        }
+    }, [open]);
 
     const handleSubmit = async (values) => {
         try {
@@ -81,7 +88,19 @@ export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegiste
                 </Form.Item>
 
                 <div className="login-actions">
-                    <Text type="danger" className="forgot-password">Quên mật khẩu?</Text>
+                    <Text
+                        type="danger"
+                        className="forgot-password"
+                        onClick={() => {
+                            form.resetFields();
+                            onClose();
+                            onForgotPassword?.(); // mở modal ForgotPassword
+                        }}
+                        style={{ cursor: "pointer" }}
+                    >
+                        Quên mật khẩu?
+                    </Text>
+
                 </div>
 
                 <Button
