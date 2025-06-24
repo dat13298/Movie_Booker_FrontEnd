@@ -217,3 +217,30 @@
 .ant-picker-dropdown {
   z-index: 1000 !important;
 }
+/* Tối màu, chữ trắng, hover đỏ, không có nền xanh */
+.mobile-menu .ant-menu-item {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+.mobile-menu .ant-menu-item:hover {
+  color: #E02828 !important;
+  background-color: transparent !important;
+}
+
+.mobile-menu .ant-menu-item-selected {
+  color: #E02828 !important;
+  background-color: transparent !important;
+}
+
+.mobile-menu .ant-menu-item-active {
+  background-color: transparent !important;
+}
+/* Đẩy drawer xuống 64px khi placement là top */
+.custom-top-drawer.ant-drawer-top .ant-drawer-content-wrapper {
+  top: 64px !important; /* hoặc chiều cao header */
+  height: auto !important;
+  max-height: calc(100vh - 64px);
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
