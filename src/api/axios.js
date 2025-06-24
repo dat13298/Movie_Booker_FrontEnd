@@ -2,18 +2,21 @@ import axios from 'axios';
 
 const api = axios.create({
     baseURL: 'http://localhost:8080/api',
-    withCredentials: false, // true nếu dùng cookie
+    withCredentials: false,
+    timeout: 10000, // 10s timeout
 });
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error);
+    }
 );
 
 let isRefreshing = false;
@@ -67,7 +70,8 @@ api.interceptors.response.use(
             } catch (err) {
                 processQueue(err, null);
                 localStorage.clear();
-                window.location.href = '/login';
+                window.isSessionExpired = true;
+                window.location.reload();
                 return Promise.reject(err);
             } finally {
                 isRefreshing = false;

@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
-import { Row, Col, Select, Button, Grid, Menu } from 'antd';
+import React, { useState, useContext } from 'react';
+import {Row, Col, Select, Button, Grid, Menu, message} from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import MobileDrawer from './MobileDrawer';
+import Login from './Login';
+import Register from './Register';
+import {AuthContext} from '../auth/AuthProvider.jsx';
 
 const { useBreakpoint } = Grid;
 
 const HeaderBar = () => {
     const screens = useBreakpoint();
     const [visible, setVisible] = useState(false);
+    const [loginModalVisible, setLoginModalVisible] = useState(false);
+    const { auth, updateAuth } = useContext(AuthContext);
+    const [registerModalVisible, setRegisterModalVisible] = useState(false);
 
     const handleDrawer = () => setVisible(true);
     const handleClose = () => setVisible(false);
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        message.success("Đăng xuất thành công!");
+        updateAuth(null); // reset context
+    };
+    const isLoggedIn = !!auth?.accessToken;
 
     return (
         <>
@@ -36,21 +49,68 @@ const HeaderBar = () => {
                     {/* Desktop Menu */}
                     {screens.md && (
                         <Col>
-                            <Menu mode="horizontal" items={[
-                                { key: 'lich-chieu', label: 'LỊCH CHIẾU' },
-                                { key: 'phim', label: 'PHIM' },
-                                { key: 'rap', label: 'RẠP' },
-                                { key: 'gia-ve', label: 'GIÁ VÉ' },
-                                { key: 'uu-dai', label: 'TIN MỚI & ƯU ĐÃI' },
-                                { key: 'thanh-vien', label: 'THÀNH VIÊN' }
-                            ]} />
+                            <Menu
+                                mode="horizontal"
+                                items={[
+                                    { key: 'lich-chieu', label: 'LỊCH CHIẾU' },
+                                    { key: 'phim', label: 'PHIM' },
+                                    { key: 'rap', label: 'RẠP' },
+                                    { key: 'gia-ve', label: 'GIÁ VÉ' },
+                                    { key: 'uu-dai', label: 'TIN MỚI & ƯU ĐÃI' },
+                                    isLoggedIn
+                                        ? {
+                                            key: 'dang-xuat',
+                                            label: (
+                                                <Button type="link" danger onClick={handleLogout}>
+                                                    ĐĂNG XUẤT
+                                                </Button>
+                                            )
+                                        }
+                                        : {
+                                            key: 'dang-nhap',
+                                            label: (
+                                                <Button type="link" onClick={() => setLoginModalVisible(true)}>
+                                                    ĐĂNG NHẬP
+                                                </Button>
+                                            )
+                                        }
+                                ]}
+                            />
                         </Col>
                     )}
                 </Row>
             </div>
 
             {/* Mobile Menu */}
-            <MobileDrawer visible={visible} onClose={handleClose} />
+            <MobileDrawer
+                visible={visible}
+                onClose={handleClose}
+                onLoginClick={() => setLoginModalVisible(true)}
+                isLoggedIn={isLoggedIn}
+                onLogout={handleLogout}
+            />
+
+
+
+            {/* Login Modal */}
+            <Login
+                open={loginModalVisible}
+                onClose={() => setLoginModalVisible(false)}
+                onLoginSuccess={() => setLoginModalVisible(false)}
+                onSwitchToRegister={() => {
+                    setLoginModalVisible(false);
+                    setRegisterModalVisible(true);
+                }}
+            />
+            <Register
+                open={registerModalVisible}
+                onClose={() => setRegisterModalVisible(false)}
+                onSwitchToLogin={() => {
+                    setRegisterModalVisible(false);
+                    setLoginModalVisible(true);
+                }}
+            />
+
         </>
     );
 };
