@@ -21,10 +21,12 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (!open) {
-            form.resetFields();
-        }
+        if (!open) return;
+        form.resetFields();
     }, [open]);
+
+    if (!open) return null;
+
 
 
     const handleSubmit = async (values) => {
@@ -52,7 +54,7 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
 
     };
 
-    return (
+    return open ? (
         <Modal
             open={open}
             onCancel={onClose}
@@ -207,5 +209,5 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
                 </div>
             </Form>
         </Modal>
-    );
+    ) : null;
 }

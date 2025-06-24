@@ -1,104 +1,113 @@
 import React, { useState, useContext } from 'react';
-import {Row, Col, Select, Button, Grid, Menu, message} from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
-import MobileDrawer from './MobileDrawer';
+import { Row, Col, Select, Button, Grid, Menu, message, Dropdown, Space } from 'antd';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { AuthContext } from '../auth/AuthProvider.jsx';
 import Login from './Login';
 import Register from './Register';
-import {AuthContext} from '../auth/AuthProvider.jsx';
 import ForgotPassword from "@/components/ForgotPassword.jsx";
 
 const { useBreakpoint } = Grid;
 
 const HeaderBar = () => {
     const screens = useBreakpoint();
-    const [visible, setVisible] = useState(false);
     const [loginModalVisible, setLoginModalVisible] = useState(false);
-    const { auth, updateAuth } = useContext(AuthContext);
     const [registerModalVisible, setRegisterModalVisible] = useState(false);
     const [isForgotOpen, setForgotOpen] = useState(false);
 
-    const handleDrawer = () => setVisible(true);
-    const handleClose = () => setVisible(false);
+    const { auth, updateAuth, logout, userInfo } = useContext(AuthContext);
+    const isLoggedIn = !!auth?.accessToken;
+
     const handleLogout = () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         message.success("Đăng xuất thành công!");
-        updateAuth(null); // reset context
+        updateAuth(null);
     };
-    const isLoggedIn = !!auth?.accessToken;
 
     const handleBackToLogin = () => {
         setForgotOpen(false);
         setLoginModalVisible(true);
     };
+
+    const userDropdown = (
+        <Dropdown
+            menu={{
+                items: [
+                    {
+                        key: 'logout',
+                        label: <span onClick={handleLogout}><LogoutOutlined /> Đăng xuất</span>,
+                    },
+                ],
+            }}
+            trigger={['click']}
+        >
+      <span style={{ cursor: 'pointer' }}>
+        <UserOutlined /> {userInfo?.username || "Tài khoản"} ▾
+      </span>
+        </Dropdown>
+    );
+
     return (
         <>
-            <div style={{ background: '#fff', padding: '12px 16px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                <Row align="middle" justify="space-between">
-                    <Col>
-                        <img src="https://betacinemas.vn/Assets/Common/logo.png" alt="logo" height={30} />
-                    </Col>
-                    <Col flex="auto" style={{ paddingLeft: 16 }}>
-                        <Select defaultValue="Beta Thái Nguyên" style={{ width: '100%', maxWidth: 200 }}>
-                            <Select.Option value="thai-nguyen">Beta Thái Nguyên</Select.Option>
-                            <Select.Option value="hanoi">Beta Hà Nội</Select.Option>
-                        </Select>
-                    </Col>
+            <div style={{
+                background: '#16121A',
+                padding: '12px 32px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }}>
+                {/* Logo */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <img
+                        src="https://betacinemas.vn/Assets/Common/logo.png"
+                        alt="logo"
+                        height={36}
+                    />
+                </div>
 
-                    {/* Mobile Button */}
-                    {!screens.md && (
-                        <Col>
-                            <Button icon={<MenuOutlined />} onClick={handleDrawer} />
-                        </Col>
-                    )}
+                {/* Menu items */}
+                <div style={{ display: 'flex', gap: 24 }}>
+                    <div style={{ color: '#fff', cursor: 'pointer' }}>LỊCH CHIẾU</div>
+                    <div style={{ color: '#fff', cursor: 'pointer' }}>PHIM</div>
+                    <div style={{ color: '#fff', cursor: 'pointer' }}>RẠP</div>
+                    <div style={{ color: '#fff', cursor: 'pointer' }}>GIÁ VÉ</div>
+                    <div style={{ color: '#fff', cursor: 'pointer' }}>TIN MỚI & ƯU ĐÃI</div>
+                </div>
 
-                    {/* Desktop Menu */}
-                    {screens.md && (
-                        <Col>
-                            <Menu
-                                mode="horizontal"
-                                items={[
-                                    { key: 'lich-chieu', label: 'LỊCH CHIẾU' },
-                                    { key: 'phim', label: 'PHIM' },
-                                    { key: 'rap', label: 'RẠP' },
-                                    { key: 'gia-ve', label: 'GIÁ VÉ' },
-                                    { key: 'uu-dai', label: 'TIN MỚI & ƯU ĐÃI' },
-                                    isLoggedIn
-                                        ? {
-                                            key: 'dang-xuat',
-                                            label: (
-                                                <Button type="link" danger onClick={handleLogout}>
-                                                    ĐĂNG XUẤT
-                                                </Button>
-                                            )
-                                        }
-                                        : {
-                                            key: 'dang-nhap',
-                                            label: (
-                                                <Button type="link" onClick={() => setLoginModalVisible(true)}>
-                                                    ĐĂNG NHẬP
-                                                </Button>
-                                            )
-                                        }
-                                ]}
-                            />
-                        </Col>
+                {/* Auth buttons or username dropdown */}
+                <div>
+                    {isLoggedIn ? (
+                        userDropdown
+                    ) : (
+                        <Space>
+                            <Button
+                                style={{
+                                    borderColor: '#fff',
+                                    color: '#fff',
+                                    background: 'transparent'
+                                }}
+                                onClick={() => setRegisterModalVisible(true)}
+                            >
+                                Đăng ký
+                            </Button>
+                            <Button
+                                style={{
+                                    backgroundColor: '#E02828',
+                                    borderColor: '#E02828',
+                                    color: '#fff'
+                                }}
+                                onClick={() => setLoginModalVisible(true)}
+                            >
+                                Đăng nhập
+                            </Button>
+                        </Space>
                     )}
-                </Row>
+                </div>
             </div>
 
-            {/* Mobile Menu */}
-            <MobileDrawer
-                visible={visible}
-                onClose={handleClose}
-                onLoginClick={() => setLoginModalVisible(true)}
-                isLoggedIn={isLoggedIn}
-                onLogout={handleLogout}
-            />
-
-
-
-            {/* Login Modal */}
+            {/* Modals */}
             <Login
                 open={loginModalVisible}
                 onClose={() => setLoginModalVisible(false)}
@@ -121,6 +130,7 @@ const HeaderBar = () => {
                     setLoginModalVisible(true);
                 }}
             />
+
             <ForgotPassword
                 open={isForgotOpen}
                 onClose={() => {

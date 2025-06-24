@@ -214,3 +214,6 @@
 .login-input .ant-select-selection-item {
   color: white;
 }
+.ant-picker-dropdown {
+  z-index: 1000 !important;
+}
