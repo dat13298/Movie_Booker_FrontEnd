@@ -8,12 +8,13 @@
 }
 
 .section-title {
+  font-family: 'Poppins', sans-serif !important;
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 16px;
   border-left: 5px solid #e13427;
   padding-left: 10px;
-  color: #d3c8c8;
+  color: #b7afaf;
 }
 
 @media (max-width: 768px) {
