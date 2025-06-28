@@ -1,0 +1,30 @@
+.movie-slider {
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.movie-card {
+  text-align: center;
+}
+
+.movie-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.movie-card img:hover {
+  transform: scale(1.05);
+}
+
+.movie-card h4 {
+  margin-top: 10px;
+  font-size: 16px;
+}
