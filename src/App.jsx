@@ -8,6 +8,8 @@ import UserList from "@/pages/UserList.jsx";
 import TestPaymentPage from "@/pages/TestPaymentPage.jsx";
 import VnpayReturn from "@/pages/VnpayReturn.jsx";
 import Footer from "@/components/Footer.jsx";
+import BookingPage from "@/pages/BookingPage.jsx";
+import ChatWidget from "@/components/AiChatLauncher.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -17,7 +19,6 @@ export default function App() {
         <>
             {/*<Example/>*/}
             {/*<TestPaymentPage />*/}
-
             {!hideHeaderRoutes.includes(location.pathname) && <HeaderBar />}
             <Routes>
                 <Route path="/" element={<Home />} />
@@ -26,7 +27,9 @@ export default function App() {
                 <Route path="/users" element={<UserList />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/booking/:slug" element={<BookingPage />} />
             </Routes>
+            <ChatWidget/>
             {!hideHeaderRoutes.includes(location.pathname) && <Footer />}
         </>
     );
