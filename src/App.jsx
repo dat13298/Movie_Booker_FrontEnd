@@ -10,6 +10,7 @@ import VnpayReturn from "@/pages/VnpayReturn.jsx";
 import Footer from "@/components/Footer.jsx";
 import BookingPage from "@/pages/BookingPage.jsx";
 import ChatWidget from "@/components/AiChatLauncher.jsx";
+import {MovieDetail} from "@/components/MovieDetail.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -28,6 +29,7 @@ export default function App() {
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/booking/:slug" element={<BookingPage />} />
+                <Route path="/movie/:id" element={<MovieDetail />} />
             </Routes>
             <ChatWidget/>
             {!hideHeaderRoutes.includes(location.pathname) && <Footer />}
