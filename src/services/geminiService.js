@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyAkazjaz0Yqbl8_OR2CDLaJUk5-N-JUIu0";
+const API_KEY = "API_KEY";
 
 export async function fetchGeminiResponse(message) {
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
