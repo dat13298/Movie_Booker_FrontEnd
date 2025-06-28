@@ -22,8 +22,6 @@ export default function App() {
 
     return (
         <>
-            {/*<Example/>*/}
-            {/*<TestPaymentPage />*/}
             {!hideHeaderRoutes.includes(location.pathname) && <HeaderBar />}
             <Routes>
                 <Route path="/" element={<Home />} />
