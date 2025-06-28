@@ -12,7 +12,9 @@ import { AuthContext } from '../auth/AuthProvider.jsx';
 import Login from './Login';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword.jsx';
-import MobileDrawer from './MobileDrawer.jsx'; // <-- chỉnh path nếu cần
+import MobileDrawer from './MobileDrawer.jsx';
+import {useLocation, useNavigate} from "react-router-dom";
+import logo from '../assets/logo.png';
 
 const { useBreakpoint } = Grid;
 
@@ -22,9 +24,21 @@ const HeaderBar = () => {
     const [registerModalVisible, setRegisterModalVisible] = useState(false);
     const [isForgotOpen, setForgotOpen] = useState(false);
     const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const { auth, updateAuth, userInfo } = useContext(AuthContext);
     const isLoggedIn = !!auth?.accessToken;
+
+
+    const menuItems = [
+        { path: '/', label: 'TRANG CHỦ' },
+        { path: '/show-time', label: 'LỊCH CHIẾU' },
+        { path: '/movies', label: 'PHIM' },
+        { path: '/theaters', label: 'RẠP' },
+        { path: '/ticket-price', label: 'GIÁ VÉ' },
+        { path: '/coupons', label: 'ĐỔI ĐIỂM' },
+    ];
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
@@ -76,20 +90,35 @@ const HeaderBar = () => {
                 {/* Logo */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <img
-                        src="https://betacinemas.vn/Assets/Common/logo.png"
+                        src={logo}
                         alt="logo"
-                        height={36}
+                        height={50}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => navigate('/')}  // quay về trang chủ khi click
                     />
                 </div>
 
                 {/* Menu items */}
                 {screens.md ? (
                     <div style={{ display: 'flex', gap: 24 }}>
-                        <div style={{ color: '#fff', cursor: 'pointer' }}>LỊCH CHIẾU</div>
-                        <div style={{ color: '#fff', cursor: 'pointer' }}>PHIM</div>
-                        <div style={{ color: '#fff', cursor: 'pointer' }}>RẠP</div>
-                        <div style={{ color: '#fff', cursor: 'pointer' }}>GIÁ VÉ</div>
-                        <div style={{ color: '#fff', cursor: 'pointer' }}>TIN MỚI & ƯU ĐÃI</div>
+                        {menuItems.map((item) => (
+                            <div
+                                key={item.path}
+                                onClick={() => navigate(item.path)}
+                                style={{
+                                    cursor: 'pointer',
+                                    padding: '6px 12px',
+                                    borderRadius: 4,
+                                    color: '#fff',
+                                    background: location.pathname === item.path
+                                        ? 'linear-gradient(90deg, #ff416c, #ff4b2b)'
+                                        : 'transparent',
+                                    transition: '0.3s',
+                                }}
+                            >
+                                {item.label}
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     <MenuOutlined
