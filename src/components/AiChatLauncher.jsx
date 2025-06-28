@@ -125,17 +125,19 @@ export default function ChatWidget() {
                         style={{
                             position: "fixed",
                             bottom: 140,
-                            right: 24,
-                            width: 380,
-                            height: 520,
+                            right: 16,
+                            width: "90vw",
+                            maxWidth: 380,
+                            height: "70vh",
                             display: "flex",
                             flexDirection: "column",
                             border: "1px solid #ff4b2b",
                             borderRadius: 16,
                             background: "#1e1e1e",
-                            boxShadow: "none",
                             zIndex: 1000,
+                            boxShadow: "0 8px 20px rgba(0,0,0,0.4)",
                         }}
+
                     >
                         {/* Header */}
                         <div
