@@ -14,6 +14,7 @@ import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
 import TicketPrice from "@/pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
+import {MovieDetail} from "@/pages/MovieDetail.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -21,8 +22,6 @@ export default function App() {
 
     return (
         <>
-            {/*<Example/>*/}
-            {/*<TestPaymentPage />*/}
             {!hideHeaderRoutes.includes(location.pathname) && <HeaderBar />}
             <Routes>
                 <Route path="/" element={<Home />} />
@@ -37,6 +36,7 @@ export default function App() {
                 <Route path="/theaters" element={<Theaters />} />
                 <Route path="/ticket-price" element={<TicketPrice />} />
                 <Route path="/coupons" element={<Coupons />} />
+                <Route path="/movie/:id" element={<MovieDetail />} />
             </Routes>
             <ChatWidget/>
             {!hideHeaderRoutes.includes(location.pathname) && <Footer />}
