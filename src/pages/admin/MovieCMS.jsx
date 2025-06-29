@@ -1,12 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {Table, Button, Space, Popconfirm, message, Tag, Input, Select} from "antd";
+import { Table, Button, Space, Popconfirm, message, Tag, Input } from "antd";
 import dayjs from "dayjs";
 import api from "@/api/axios";
 import MovieFormModal from "@/components/admin/MovieFormModal";
 
 const { Search } = Input;
 
+/**
+ * Quản lý danh sách phim (có phân trang, search & filter trực tiếp dưới header)
+ * – filter: screenType, is18Plus, movieStatus
+ * – giữ trạng thái filter trong state để bảng luôn phản‑chiếu
+ */
 export default function MovieCMS() {
+    /* ─────────── state ─────────── */
     const [movies, setMovies] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [loading, setLoading] = useState(false);
@@ -16,23 +22,25 @@ export default function MovieCMS() {
     const [filter, setFilter] = useState({
         screenType: null,
         is18Plus: null,
-        status: null
+        status: null,
     });
 
+    /* ─────────── API helper ─────────── */
     const fetchMovies = useCallback(
-        async (page = 1, size = 10, kw = "", f = filter) => {
+        async (page = 1, size = 10, kw = "", f = {}) => {
             setLoading(true);
             try {
                 const res = await api.get("/movies", {
                     params: {
-                        page: page - 1,
+                        page: page - 1, // backend 0‑based
                         size,
-                        keyword: kw.trim(),
+                        keyword: kw,
                         screenType: f.screenType ?? undefined,
-                        is18Plus:  f.is18Plus  ?? undefined,
-                        status:    f.status    ?? undefined,
-                    }
+                        is18Plus: f.is18Plus ?? undefined,
+                        status: f.status ?? undefined,
+                    },
                 });
+
                 const data = res.data;
                 setMovies(data.content);
                 setPagination({
@@ -50,29 +58,29 @@ export default function MovieCMS() {
     );
 
     /* initial load */
-    useEffect(() => { fetchMovies(); }, []);
+    useEffect(() => {
+        fetchMovies();
+    }, [fetchMovies]);
 
-    /* ---------- table/ page change ---------- */
+    /* ─────────── table change (paging + filter) ─────────── */
     const handleTableChange = (pag, filters) => {
-        // filters = { screenType: ['2D'], is18Plus: ['true'], movieStatus: ['ENDED'] }
-        setFilter({
+        const newFilter = {
             screenType: filters.screenType?.[0] ?? null,
-            is18Plus:  filters.is18Plus  ? filters.is18Plus[0] === 'true' : null,
-            status:    filters.movieStatus?.[0] ?? null,
-        });
-
-        fetchMovies(pag.current, pag.pageSize, keyword, {
-            screenType: filters.screenType?.[0] ?? null,
-            is18Plus:  filters.is18Plus  ? filters.is18Plus[0] === 'true' : null,
-            status:    filters.movieStatus?.[0] ?? null,
-        });
+            is18Plus: filters.is18Plus ? filters.is18Plus[0] === "true" : null,
+            status: filters.movieStatus?.[0] ?? null,
+        };
+        setFilter(newFilter);
+        fetchMovies(pag.current, pag.pageSize, keyword, newFilter);
     };
 
+    /* ─────────── search ─────────── */
     const onSearch = (value) => {
-        setKeyword(value);
-        fetchMovies(1, pagination.pageSize, value, status);
+        const kw = value.trim();
+        setKeyword(kw);
+        fetchMovies(1, pagination.pageSize, kw, filter); // luôn về trang 1
     };
 
+    /* ─────────── add / update ─────────── */
     const handleSubmit = async (formData) => {
         try {
             if (editingMovie) {
@@ -90,7 +98,7 @@ export default function MovieCMS() {
                 message.success("Thêm phim thành công");
             }
 
-            fetchMovies(pagination.current, pagination.pageSize, keyword, status);
+            fetchMovies(pagination.current, pagination.pageSize, keyword, filter);
             setModalVisible(false);
             setEditingMovie(null);
         } catch {
@@ -98,23 +106,25 @@ export default function MovieCMS() {
         }
     };
 
+    /* ─────────── delete ─────────── */
     const handleDelete = async (id) => {
         try {
             await api.delete(`/movies/${id}`);
             message.success("Xóa phim thành công");
-            fetchMovies(pagination.current, pagination.pageSize, keyword, status);
+            fetchMovies(pagination.current, pagination.pageSize, keyword, filter);
         } catch {
             message.error("Lỗi khi xóa phim");
         }
     };
 
+    /* ─────────── table columns ─────────── */
     const columns = [
         {
             title: "Poster",
             dataIndex: "imageUrl",
             width: 80,
             fixed: "left",
-            render: (url) => <img src={url} alt="" style={{ width: 60, height: 90, objectFit: "cover" }} />,
+            render: (url) => <img src={url} alt="poster" style={{ width: 60, height: 90, objectFit: "cover" }} />,
         },
         { title: "Tên phim", dataIndex: "title", width: 160, fixed: "left" },
         { title: "Mã", dataIndex: "movieCode", width: 90 },
@@ -146,24 +156,22 @@ export default function MovieCMS() {
                 { text: "IMAX", value: "IMAX" },
             ],
             filteredValue: filter.screenType ? [filter.screenType] : null,
-            onFilter: () => true,
+            onFilter: () => true, // luôn true để Ant Design hiển thị icon lọc
         },
         {
             title: "18+",
             dataIndex: "is18Plus",
             width: 80,
             align: "center",
-            render: flag => flag
-                ? <Tag color="red" style={{fontWeight:600}}>18+</Tag>
-                : <Tag color="green">P</Tag>,
+            render: (flag) =>
+                flag ? <Tag color="red" style={{ fontWeight: 600 }}>18+</Tag> : <Tag color="green">P</Tag>,
             filters: [
-                { text: "18+", value: true  },
-                { text: "P",   value: false },
+                { text: "18+", value: true },
+                { text: "P", value: false },
             ],
             filteredValue: filter.is18Plus !== null ? [String(filter.is18Plus)] : null,
             onFilter: () => true,
         },
-
         {
             title: "Trạng thái",
             dataIndex: "movieStatus",
@@ -171,7 +179,7 @@ export default function MovieCMS() {
             filters: [
                 { text: "COMING_SOON", value: "COMING_SOON" },
                 { text: "NOW_SHOWING", value: "NOW_SHOWING" },
-                { text: "ENDED",       value: "ENDED" },
+                { text: "ENDED", value: "ENDED" },
             ],
             filteredValue: filter.status ? [filter.status] : null,
             onFilter: () => true,
@@ -197,6 +205,7 @@ export default function MovieCMS() {
         },
     ];
 
+    /* ─────────── render ─────────── */
     return (
         <>
             <h2>🎬 Quản lý Phim</h2>

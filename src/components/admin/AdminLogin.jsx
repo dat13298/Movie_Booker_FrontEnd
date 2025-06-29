@@ -10,20 +10,24 @@ export default function AdminLogin() {
 
     const handleSubmit = async (values) => {
         try {
-            const res = await api.post("/auth/login", values);
+            const { data } = await api.post("/auth/login", values);   // <- axios tự thêm baseURL
+            const accessToken  = data.accessToken ?? data.token;      // fallback
+            const refreshToken = data.refreshToken;
 
-            // response đúng rồi, extract tokens
-            updateAuth({
-                accessToken: res.data.accessToken,
-                refreshToken: res.data.refreshToken,
-            });
+            if (!accessToken || !refreshToken) {
+                message.error("Response thiếu token");
+                return;
+            }
 
+            updateAuth({ accessToken, refreshToken });
             message.success("Đăng nhập thành công!");
-            navigate("/admin/movies");
+            navigate("/admin/movies", { replace: true });
         } catch (err) {
-            message.error("Sai tài khoản hoặc mật khẩu");
+            const msg = err.response?.data?.message || "Sai tài khoản hoặc mật khẩu";
+            message.error(msg);
         }
     };
+
 
 
     return (
