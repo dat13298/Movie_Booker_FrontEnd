@@ -46,7 +46,6 @@ Câu hỏi: ${message}
         const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "";
         console.log("🔍 Extracted Gemini Text:", text);
 
-        // Làm sạch nếu có ```json ... ```
         let cleanText = text.trim();
         if (cleanText.startsWith("```json")) {
             cleanText = cleanText.replace(/^```json/, "").replace(/```$/, "").trim();
