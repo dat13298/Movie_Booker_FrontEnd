@@ -7,7 +7,6 @@ import MovieFormModal from "@/components/admin/MovieFormModal";
 const { Search } = Input;
 
 export default function MovieCMS() {
-    /* ---------- state ---------- */
     const [movies, setMovies] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [loading, setLoading] = useState(false);
@@ -15,12 +14,11 @@ export default function MovieCMS() {
     const [editingMovie, setEditingMovie] = useState(null);
     const [keyword, setKeyword] = useState("");
     const [filter, setFilter] = useState({
-        screenType: null,   // '2D' | '3D' | 'IMAX' | …
-        is18Plus: null,     // true | false
-        status: null        // COMING_SOON | NOW_SHOWING | ENDED
+        screenType: null,
+        is18Plus: null,
+        status: null
     });
 
-    /* ---------- fetch helper ---------- */
     const fetchMovies = useCallback(
         async (page = 1, size = 10, kw = "", f = filter) => {
             setLoading(true);
@@ -100,27 +98,16 @@ export default function MovieCMS() {
         }
     };
 
-    /* ---------- delete ---------- */
     const handleDelete = async (id) => {
         try {
             await api.delete(`/movies/${id}`);
             message.success("Xóa phim thành công");
-
-            const newTotal = pagination.total - 1;
-            const newPage =
-                newTotal === 0
-                    ? 1
-                    : (pagination.current - 1) * pagination.pageSize >= newTotal
-                        ? pagination.current - 1
-                        : pagination.current;
-
             fetchMovies(pagination.current, pagination.pageSize, keyword, status);
         } catch {
             message.error("Lỗi khi xóa phim");
         }
     };
 
-    /* ---------- columns ---------- */
     const columns = [
         {
             title: "Poster",
@@ -149,7 +136,7 @@ export default function MovieCMS() {
             width: 120,
             render: (d) => dayjs(d).format("DD/MM/YYYY"),
         },
-        {                     // —— Screen Type ——
+        {
             title: "Loại màn",
             dataIndex: "screenType",
             width: 90,
@@ -161,7 +148,7 @@ export default function MovieCMS() {
             filteredValue: filter.screenType ? [filter.screenType] : null,
             onFilter: () => true,
         },
-        {                     // —— 18+ ——
+        {
             title: "18+",
             dataIndex: "is18Plus",
             width: 80,
@@ -177,7 +164,7 @@ export default function MovieCMS() {
             onFilter: () => true,
         },
 
-        {                    // —— Status ——
+        {
             title: "Trạng thái",
             dataIndex: "movieStatus",
             width: 140,
