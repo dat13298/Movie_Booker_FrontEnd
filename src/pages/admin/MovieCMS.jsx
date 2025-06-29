@@ -70,13 +70,11 @@ export default function MovieCMS() {
         });
     };
 
-    /* ---------- search ---------- */
     const onSearch = (value) => {
         setKeyword(value);
         fetchMovies(1, pagination.pageSize, value, status);
     };
 
-    /* ---------- submit (add / update) ---------- */
     const handleSubmit = async (formData) => {
         try {
             if (editingMovie) {
