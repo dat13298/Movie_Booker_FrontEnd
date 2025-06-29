@@ -1,84 +1,73 @@
-import axios from 'axios';
+import axios from "axios";
+import {updateAuthTokens} from "@/auth/authHelper.js";
+import emitter from "@/auth/eventBus.js";
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api',
-    withCredentials: false,
-    timeout: 10000, // 10s timeout
+    baseURL: import.meta.env.VITE_API_BASE,               // đừng hard-code
+    timeout: 10000,
 });
 
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+// ────────────────── REQUEST ──────────────────
+api.interceptors.request.use((cfg) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) cfg.headers.Authorization = `Bearer ${token}`;
+    return cfg;
+});
 
-let isRefreshing = false;
-let failedQueue = [];
+// ─────────────── RESPONSE (refresh) ───────────
+let refreshing = false;
+let queue = [];
 
-const processQueue = (error, token = null) => {
-    failedQueue.forEach((prom) => {
-        if (error) {
-            prom.reject(error);
-        } else {
-            prom.resolve(token);
-        }
+const replayQueue = (err, token) => {
+    queue.forEach(({ resolve, reject }) => {
+        err ? reject(err) : resolve(token);
     });
-    failedQueue = [];
+    queue = [];
 };
 
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
+    (res) => res,
+    async (err) => {
+        const orig = err.config;
 
-        // Nếu token hết hạn và chưa retry
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            if (isRefreshing) {
+        // chỉ refresh cho 401 từ API (loại trừ /auth/refresh)
+        if (err.response?.status === 401 && !orig._retry && !orig.url.includes("/auth/refresh")) {
+            orig._retry = true;
+
+            // Đang refresh? → chờ
+            if (refreshing) {
                 return new Promise((resolve, reject) => {
-                    failedQueue.push({ resolve, reject });
-                })
-                    .then((token) => {
-                        originalRequest.headers.Authorization = `Bearer ${token}`;
-                        return api(originalRequest);
-                    })
-                    .catch(Promise.reject);
+                    queue.push({ resolve, reject });
+                }).then((token) => {
+                    orig.headers.Authorization = `Bearer ${token}`;
+                    return api(orig);
+                });
             }
 
-            originalRequest._retry = true;
-            isRefreshing = true;
+            refreshing = true;
+            const refreshToken = localStorage.getItem("refreshToken");
 
             try {
-                const refreshToken = localStorage.getItem('refreshToken');
-                const res = await axios.post('http://localhost:8080/api/auth/refresh', {
-                    refreshToken,
-                });
+                const { data } = await axios.post(
+                    `${import.meta.env.VITE_API_BASE}/auth/refresh`,
+                    { refreshToken }
+                );
 
-                const newAccessToken = res.data.accessToken || res.data; // fallback nếu backend trả raw token
-                localStorage.setItem('accessToken', newAccessToken);
+                const newAccess = data.accessToken || data;
+                updateAuthTokens(newAccess, refreshToken);         // ghi LS + phát sự kiện
+                replayQueue(null, newAccess);
 
-                processQueue(null, newAccessToken);
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-                return api(originalRequest);
-            } catch (err) {
-                processQueue(err, null);
-                localStorage.clear();
-                window.isSessionExpired = true;
-                window.location.reload();
-                return Promise.reject(err);
+                orig.headers.Authorization = `Bearer ${newAccess}`;
+                return api(orig);                                   // gửi lại request cũ
+            } catch (e) {
+                replayQueue(e, null);
+                emitter.emit("logout");                             // thông báo toàn app logout
+                return Promise.reject(e);
             } finally {
-                isRefreshing = false;
+                refreshing = false;
             }
         }
-
-        return Promise.reject(error);
+        return Promise.reject(err);
     }
 );
 

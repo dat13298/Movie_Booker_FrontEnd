@@ -1,79 +1,60 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, {createContext, useMemo, useState, useEffect} from "react";
+import emitter from "./eventBus";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState({
-        accessToken: null,
-        refreshToken: null,
-    });
+const LS_ACCESS  = "accessToken";
+const LS_REFRESH = "refreshToken";
 
-    const parseJwt = (token) => {
-        try {
-            const base64Payload = token.split('.')[1];
-            const payload = atob(base64Payload);
-            return JSON.parse(payload);
-        } catch {
-            return null;
-        }
-    };
+const parseJwt = (t) => {
+    try { return JSON.parse(atob(t.split(".")[1])); } catch { return null; }
+};
 
-    const [userInfo, setUserInfo] = useState(null);
+export const AuthProvider = ({children}) => {
+    /* ─── 1. Khởi tạo từ localStorage ─── */
+    const [auth, setAuth] = useState(() => ({
+        accessToken : localStorage.getItem(LS_ACCESS),
+        refreshToken: localStorage.getItem(LS_REFRESH),
+    }));
 
+    /* 2. Giải mã userInfo khi accessToken thay đổi */
+    const userInfo = useMemo(
+        () => (auth.accessToken ? parseJwt(auth.accessToken) : null),
+        [auth.accessToken]
+    );
+
+    /* 3. Lắng nghe refresh-token thành công từ axios */
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        if (accessToken && refreshToken) {
-            setAuth({ accessToken, refreshToken });
-            setUserInfo(parseJwt(accessToken)); // Lưu username, role, etc.
-        }
+        const handler = (newAcc) =>
+            setAuth((s) => ({ ...s, accessToken: newAcc }));
+        emitter.on("tokenUpdated", handler);
+        emitter.on("logout", () => updateAuth());          // clear toàn cục
+        return () => {
+            emitter.off("tokenUpdated", handler);
+            emitter.off("logout");
+        };
     }, []);
 
-
-    const [isSessionExpired, setIsSessionExpired] = useState(false);
-
-    useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        if (accessToken && refreshToken) {
-            setAuth({ accessToken, refreshToken });
-        }
-    }, []);
-
-    useEffect(() => {
-        if (window.isSessionExpired) {
-            setIsSessionExpired(true);
-        }
-    }, []);
-
-    const updateAuth = (data) => {
-        if (!data) {
-            setAuth({ accessToken: null, refreshToken: null });
-            setUserInfo(null);
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
+    /* 4. Hàm cập nhật / xoá token */
+    const updateAuth = ({accessToken, refreshToken} = {}) => {
+        if (!accessToken || !refreshToken) {
+            localStorage.removeItem(LS_ACCESS);
+            localStorage.removeItem(LS_REFRESH);
+            setAuth({accessToken:null, refreshToken:null});
             return;
         }
-
-        const { accessToken, refreshToken } = data;
-        setAuth({ accessToken, refreshToken });
-        setUserInfo(parseJwt(accessToken));
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem(LS_ACCESS,  accessToken);
+        localStorage.setItem(LS_REFRESH, refreshToken);
+        setAuth({accessToken, refreshToken});
     };
 
-
     const logout = () => {
-        localStorage.clear();
-        setAuth({ accessToken: null, refreshToken: null });
-        window.isSessionExpired = false;
-        window.location.reload();
+        updateAuth();
+        window.location.replace("/login");
     };
 
     return (
-        <AuthContext.Provider value={{ auth, updateAuth, logout, isSessionExpired, userInfo }}>
+        <AuthContext.Provider value={{auth, userInfo, updateAuth, logout}}>
             {children}
         </AuthContext.Provider>
     );
