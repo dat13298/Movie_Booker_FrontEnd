@@ -14,22 +14,25 @@ import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
 import TicketPrice from "@/pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
-import {MovieDetail} from "@/pages/MovieDetail.jsx";
+import { MovieDetail } from "@/pages/MovieDetail.jsx";
+
+// Admin
+import AdminLayout from "@/layouts/AdminLayout.jsx";
+import MovieCMS from "@/pages/admin/MovieCMS.jsx";
+import TheaterCMS from "@/pages/admin/TheaterCMS.jsx";
+import RequireAdmin from "@/components/admin/RequireAdmin.jsx";
+import ProtectedRoute from "@/components/ProtectedRoute.jsx";
+import AdminLogin from "@/components/admin/AdminLogin.jsx";
+import SeatMapPage from "@/pages/SeatMapPage.jsx";
 
 export default function App() {
-    const location = useLocation();
-    const hideHeaderRoutes = ["/login","/vnpay-return"];
-
     return (
-        <>
-            {!hideHeaderRoutes.includes(location.pathname) && <HeaderBar />}
-            <Routes>
+        <Routes>
+            {/* Frontend layout */}
+            <Route element={<FrontendLayout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/exmaple" element={<Example />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/users" element={<UserList />} />
-                <Route path="/vnpay-return" element={<VnpayReturn />} />
-                <Route path="*" element={<NotFound />} />
                 <Route path="/booking/:slug" element={<BookingPage />} />
                 <Route path="/show-time" element={<ShowTime />} />
                 <Route path="/movies" element={<Movies />} />
@@ -37,9 +40,19 @@ export default function App() {
                 <Route path="/ticket-price" element={<TicketPrice />} />
                 <Route path="/coupons" element={<Coupons />} />
                 <Route path="/movie/:id" element={<MovieDetail />} />
-            </Routes>
-            <ChatWidget/>
-            {!hideHeaderRoutes.includes(location.pathname) && <Footer />}
-        </>
+                <Route path="/vnpay-return" element={<VnpayReturn />} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="/show-time/:id/booking" element={<SeatMapPage />} />
+            </Route>
+
+            {/* Admin (Protected) */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route element={<ProtectedRoute requiredRole="ROLE_ADMIN" />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route path="movies" element={<MovieCMS />} />
+                    <Route path="theaters" element={<TheaterCMS />} />
+                </Route>
+            </Route>
+        </Routes>
     );
 }

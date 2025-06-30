@@ -41,27 +41,30 @@ export default function ChatWidget() {
 
         const userText = input;
         setInput("");
-        setMsgs((p) => [...p, {sender: "user", text: userText}]);
+        setMsgs((p) => [...p, { sender: "user", text: userText }]);
         setLoad(true);
 
         try {
-            const aiText = await fetchGeminiResponse(userText);
-            const movie = detectMovie(userText);
+            const res = await fetchGeminiResponse(userText);
 
-            if (movie) {
-                setMsgs((p) => [
-                    ...p,
-                    {sender: "ai", text: `Đang chuyển đến trang đặt vé cho phim "${movie.name}"…`},
-                ]);
-                setTimeout(() => navigate(`/booking/${slugify(movie.name)}`), 1500);
-            } else {
-                setMsgs((p) => [
-                    ...p,
-                    {sender: "ai", text: aiText || "Hiện không có suất chiếu phim đó, bạn muốn xem phim khác không?"},
-                ]);
+            if (res.intent === "booking" && res.movie) {
+                const found = movies.find((m) =>
+                    res.movie.toLowerCase().includes(m.name.toLowerCase())
+                );
+
+                if (found) {
+                    setMsgs((p) => [
+                        ...p,
+                        { sender: "ai", text: `Đang chuyển đến trang đặt vé cho phim "${found.name}"…` },
+                    ]);
+                    setTimeout(() => navigate(`/booking/${slugify(found.name)}`), 1500);
+                    return;
+                }
             }
+
+            setMsgs((p) => [...p, { sender: "ai", text: res.reply || "Tôi chưa rõ bạn cần gì, bạn có thể hỏi lại nhé!" }]);
         } catch {
-            setMsgs((p) => [...p, {sender: "ai", text: "Lỗi khi gọi AI."}]);
+            setMsgs((p) => [...p, { sender: "ai", text: "Lỗi khi gọi AI." }]);
         } finally {
             setLoad(false);
         }
@@ -125,17 +128,19 @@ export default function ChatWidget() {
                         style={{
                             position: "fixed",
                             bottom: 140,
-                            right: 24,
-                            width: 380,
-                            height: 520,
+                            right: 16,
+                            width: "90vw",
+                            maxWidth: 380,
+                            height: "70vh",
                             display: "flex",
                             flexDirection: "column",
                             border: "1px solid #ff4b2b",
                             borderRadius: 16,
                             background: "#1e1e1e",
-                            boxShadow: "none",
                             zIndex: 1000,
+                            boxShadow: "0 8px 20px rgba(0,0,0,0.4)",
                         }}
+
                     >
                         {/* Header */}
                         <div
