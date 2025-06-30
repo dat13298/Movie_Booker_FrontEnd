@@ -21,6 +21,7 @@ import TheaterCMS from "@/pages/admin/TheaterCMS.jsx";
 import RequireAdmin from "@/components/admin/RequireAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AdminLogin from "@/components/admin/AdminLogin.jsx";
+import SeatMapPage from "@/pages/SeatMapPage.jsx";
 
 export default function App() {
     return (
@@ -39,6 +40,7 @@ export default function App() {
                 <Route path="/movie/:id" element={<MovieDetail />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/show-time/:id/booking" element={<SeatMapPage />} />
             </Route>
 
             {/* Admin (Protected) */}
