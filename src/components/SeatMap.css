@@ -1,0 +1,100 @@
+/* ---------- layout cơ bản ---------- */
+body{
+    background:#0f1218;
+    font-family:'Poppins',sans-serif;
+}
+
+.screen{
+    width:60%;          /*  ↔  chiều rộng % dễ responsive   */
+    height:14px;
+    margin:0 auto 32px;
+    background:linear-gradient(#ffc84b,#ff9900);
+    border-radius:4px 4px 0 0;
+    box-shadow:0 8px 16px rgba(0,0,0,.4);
+}
+
+/* ---------- khung ghế ---------- */
+.seat-map{
+    display:grid;
+    gap:8px;
+    justify-content:center;
+}
+
+/* ---------- ghế cơ bản ---------- */
+.seat{
+    width:48px;height:48px;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+
+    font-size:12px;font-weight:600;color:#fff;
+    cursor:pointer;user-select:none;
+    transition:.15s;
+}
+
+/* loại ghế */
+.seat.normal {background:#323b4a;}    /*  ⇐ đậm hơn #374151  */
+.seat.vip    {background:#f59e0b;}
+.seat.couple {background:#e11d48;}
+
+/* trạng thái */
+.seat.booked {background:#4b5563;cursor:not-allowed;opacity:.65;}
+.seat.locked {background:#9ca3af;color:#111;cursor:not-allowed;opacity:.6;}
+
+/* ghế bạn chọn */
+.seat.selected{
+    background:#3b82f6 !important;    /* blue-500  */
+    box-shadow:0 0 6px 2px rgba(59,130,246,.6);
+    transform:scale(1.05);
+}
+
+/* ---------- legend & countdown ---------- */
+.legend{
+    margin-top:16px;
+    display:flex;gap:8px;justify-content:center;
+}
+
+.countdown{
+    position:fixed;top:90px;right:24px;          /* dưới header */
+    padding:6px 14px;
+    border:2px solid #ef4444;border-radius:8px;
+    font-weight:700;color:#ef4444;
+    background:rgba(0,0,0,.35);
+    backdrop-filter:blur(4px);
+    z-index:1000;
+}
+/* ==== khung tổng ==== */
+.booking-wrapper{
+    max-width: 820px;      /* chiều rộng cố định như hình demo */
+    margin: 0 auto;        /* căn giữa trang */
+    padding: 24px 12px 80px;
+    position: relative;    /* để .countdown position:absolute bám theo */
+}
+
+/* ==== header nhỏ === */
+.booking-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+    color:#fff;
+    font-size:18px;
+}
+
+.booking-head b{color:#ffc84b}
+
+/* countdown bám theo wrapper thay vì fixed toàn trang */
+.booking-head .countdown{
+    position:static;             /* bỏ fixed */
+    border:2px solid #ef4444;
+    border-radius:8px;
+    padding:4px 12px;
+    background:rgba(0,0,0,.35);
+    backdrop-filter:blur(4px);
+    font-weight:600;
+    font-size:14px;
+}
+
+/* bảo đảm .screen thu nhỏ theo wrapper */
+.booking-wrapper .screen{
+    width:100%;
+}
