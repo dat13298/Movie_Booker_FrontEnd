@@ -1,18 +1,23 @@
-import { Route, Routes } from "react-router-dom";
-import FrontendLayout from "@/layouts/FrontendLayout.jsx";
-
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "@/pages/Home.jsx";
+import Example from "@/pages/Example.jsx";
 import Login from "@/components/Login.jsx";
 import NotFound from "@/pages/NotFound.jsx";
+import HeaderBar from "@/components/HeaderBar.jsx";
 import UserList from "@/pages/UserList.jsx";
 import VnpayReturn from "@/pages/VnpayReturn.jsx";
+import Footer from "@/components/Footer.jsx";
 import BookingPage from "@/pages/BookingPage.jsx";
+import ChatWidget from "@/components/AiChatLauncher.jsx";
 import ShowTime from "@/pages/ShowTime.jsx";
 import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
 import TicketPrice from "@/pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
 import { MovieDetail } from "@/pages/MovieDetail.jsx";
+import FrontendLayout from "@/layouts/FrontendLayout.jsx";
+import MovieDetailMobile from "@/pages/MovieDetailMobile.jsx";
+
 
 // Admin
 import AdminLayout from "@/layouts/AdminLayout.jsx";
@@ -30,7 +35,7 @@ export default function App() {
     return (
         <Routes>
             {/* Frontend layout */}
-            <Route element={<FrontendLayout />}>
+                <Route element={<FrontendLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/users" element={<UserList />} />
@@ -47,7 +52,8 @@ export default function App() {
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/show-time/:id/booking" element={<SeatMapPage />} />
-            </Route>
+                <Route path="/movie/:id" element={<MovieDetailMobile />} />
+                </Route>
 
             {/* Admin (Protected) */}
             <Route path="/admin/login" element={<AdminLogin />} />

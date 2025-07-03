@@ -1,0 +1,43 @@
+/* ---------- Showtime Selector Styles ---------- */
+
+.showtime-scroll {
+    display: flex;
+    flex-wrap: nowrap;          /* giữ tất cả items trên 1 hàng */
+    overflow-x: auto;           /* scroll ngang nếu tràn */
+    overflow-y: hidden;         /* chặn scroll dọc */
+    gap: 12px;
+    padding-bottom: 8px;
+    scrollbar-width: thin;      /* Firefox */
+    -webkit-overflow-scrolling: touch; /* smooth scroll cho iOS */
+    scroll-behavior: smooth;
+    justify-content: center;
+}
+
+/* Scrollbar Styling - Webkit (Chrome, Safari) */
+.showtime-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.showtime-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.showtime-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Optional: Button hover effect for time buttons */
+.showtime-scroll button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: 0.2s;
+}
+
+/* Optional: Responsive adjustment for spacing */
+@media (max-width: 480px) {
+    .showtime-scroll {
+        gap: 8px;
+        padding-bottom: 6px;
+    }
+}

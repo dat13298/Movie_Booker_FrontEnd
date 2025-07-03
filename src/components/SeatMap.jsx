@@ -10,11 +10,21 @@ export default function SeatMap({ showTimeId }) {
     const [selected, setSelected] = useState(new Set());
     const [cd, setCd] = useState(600);
     const [loading, setLoading] = useState(true);
+    const [disabledSeats, setDisabledSeats] = useState(new Set());
 
-    // 1. Lấy dữ liệu ghế ban đầu
+    const getValidAccessToken = async () => {
+        try {
+            await api.get("/auth/ping");
+        } catch (e) {
+            console.log("checking token", e);
+        }
+        return localStorage.getItem("accessToken");
+    };
+
     useEffect(() => {
         (async () => {
             try {
+                await getValidAccessToken();
                 const { data } = await api.get(`/show-times/${showTimeId}/seats`);
                 setSeats(
                     data.map(s => ({
@@ -34,46 +44,50 @@ export default function SeatMap({ showTimeId }) {
         })();
     }, [showTimeId]);
 
-    // 2. Thiết lập STOMP/WebSocket “direct”
     useEffect(() => {
-        const token = localStorage.getItem("accessToken");
-        const client = new Client({
-            brokerURL: "ws://localhost:8080/ws/websocket",
-            connectHeaders: { Authorization: `Bearer ${token}` },
-            debug: (msg) => console.log("[STOMP]", msg),
-            onWebSocketError: (err) => console.error("[STOMP ERROR]", err),
-            onStompError: (frame) => console.error("[STOMP BROKER ERROR]", frame),
-        });
+        let stompClient;
 
-        client.onConnect = () => {
-            console.log("[STOMP] connected, subscribing to topic…");
-            client.subscribe(`/topic/showtime/${showTimeId}`, (msg) => {
-                const evt = JSON.parse(msg.body);
-                console.log("[STOMP] Received event:", evt);
+        const connectWebSocket = async () => {
+            const token = await getValidAccessToken();
 
-                // Cập nhật trạng thái ghế
-                setSeats((prev) =>
-                    prev.map((s) => {
-                        if (s.id !== evt.seatId) return s;
-                        const newStatus = evt.type === "RELEASED" ? "AVAILABLE" : evt.type;
-                        return { ...s, status: newStatus };
-                    })
-                );
+            stompClient = new Client({
+                brokerURL: "ws://localhost:8080/ws/websocket",
+                connectHeaders: { Authorization: `Bearer ${token}` },
+                // debug: (msg) => console.log("[STOMP]", msg),
+                // onWebSocketError: (err) => console.error("[STOMP ERROR]", err),
+                // onStompError: (frame) => console.error("[STOMP BROKER ERROR]", frame),
+                onConnect: () => {
+                    console.log("[STOMP] connected");
+                    stompClient.subscribe(`/topic/showtime/${showTimeId}`, (msg) => {
+                        const evt = JSON.parse(msg.body);
+                        console.log("[STOMP] Received event:", evt);
 
-                // Nếu ghế bị LOCKED hoặc BOOKED, xóa khỏi selected
-                if (evt.type === "LOCKED" || evt.type === "BOOKED") {
-                    setSelected((p) => {
-                        const n = new Set(p);
-                        n.delete(evt.seatId);
-                        return n;
+                        setSeats((prev) =>
+                            prev.map((s) => {
+                                if (s.id !== evt.seatId) return s;
+                                const newStatus = evt.type === "RELEASED" ? "AVAILABLE" : evt.type;
+                                return { ...s, status: newStatus };
+                            })
+                        );
+
+                        if (evt.type === "LOCKED" || evt.type === "BOOKED") {
+                            setSelected((p) => {
+                                const n = new Set(p);
+                                n.delete(evt.seatId);
+                                return n;
+                            });
+                        }
                     });
-                }
+                },
             });
+
+            stompClient.activate();
         };
 
-        client.activate();
-        return () => client.deactivate();
+        connectWebSocket();
+        return () => stompClient?.deactivate();
     }, [showTimeId]);
+
 
     // 3. Countdown
     useEffect(() => {
@@ -84,18 +98,34 @@ export default function SeatMap({ showTimeId }) {
     const mm = String(Math.floor(cd / 60)).padStart(2, "0");
     const ss = String(cd % 60).padStart(2, "0");
 
-    // Xử lý click chọn ghế
     const handleClick = async (seat) => {
-        if (seat.status !== "AVAILABLE") return;
+        if (seat.status === "BOOKED" || disabledSeats.has(seat.id)) return;
+
+        setDisabledSeats((p) => new Set(p).add(seat.id));
+
         try {
-            await api.post("/seats/lock", { seatId: seat.id, showTimeId });
-            setSelected((p) => new Set(p).add(seat.id));
+            if (selected.has(seat.id)) {
+                await api.post("/seats/unlock", { seatId: seat.id, showTimeId });
+                setSelected((p) => {
+                    const n = new Set(p);
+                    n.delete(seat.id);
+                    return n;
+                });
+            } else if (seat.status === "AVAILABLE") {
+                await api.post("/seats/lock", { seatId: seat.id, showTimeId });
+                setSelected((p) => new Set(p).add(seat.id));
+            }
         } catch {
-            message.error("Không khóa được ghế");
+            message.error("Lỗi thao tác ghế");
+        } finally {
+            setDisabledSeats((p) => {
+                const n = new Set(p);
+                n.delete(seat.id);
+                return n;
+            });
         }
     };
 
-    // Tính tổng tiền
     const total = useMemo(
         () =>
             seats

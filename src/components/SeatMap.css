@@ -98,3 +98,68 @@ body{
 .booking-wrapper .screen{
     width:100%;
 }
+.seat.unavailable {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+@media (min-width: 769px) {
+    .booking-wrapper {
+        padding: 16px 8px 60px;
+    }
+
+    .booking-head {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 16px;
+        gap: 8px;
+    }
+
+    .booking-head .countdown {
+        align-self: flex-end;
+        font-size: 13px;
+        padding: 3px 10px;
+    }
+
+    .legend {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .screen {
+        height: 10px;
+        margin: 0 auto 24px;
+    }
+
+    .seat {
+        width: 36px;
+        height: 36px;
+        font-size: 11px;
+    }
+
+    .seat-map {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+        gap: 8px;
+        max-width: 100%;
+    }
+
+    .seat.selected {
+        transform: scale(1.03);
+    }
+
+    .booking-wrapper .seat-map {
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+    }
+
+    .booking-wrapper .screen {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px 0;
+    }
+}

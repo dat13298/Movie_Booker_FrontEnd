@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Row, Col, Typography, Button, Tag, Divider, Modal } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
+import ShowtimeSelector from '../components/ShowtimeSelector';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 export const MovieDetail = () => {
   const { state: { movie } } = useLocation();
@@ -39,13 +40,30 @@ export const MovieDetail = () => {
             padding: '60px 40px',
           }}
       >
-        <div style={{
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          borderRadius: 16,
-          padding: 32,
-          maxWidth: 1000,
-          margin: '0 auto',
-        }}>
+        {/* Overlay nền tối mờ */}
+        <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 0,
+            }}
+        />
+
+        <div
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              borderRadius: 16,
+              padding: 32,
+              maxWidth: 1000,
+              margin: '0 auto',
+              position: 'relative',
+              zIndex: 1,
+            }}
+        >
           <Row gutter={[32, 32]} align="middle">
             <Col xs={24} md={8}>
               <img
@@ -88,19 +106,34 @@ export const MovieDetail = () => {
                 Kiểm duyệt: T18 - Phim được phổ biến dành cho người xem từ đủ 18 tuổi
               </Paragraph>
 
-              <div style={{ marginTop: 20 }}>
+              <div style={{
+                  marginTop: 20,
+                  display: 'flex',
+                  gap: 16,
+                  flexWrap: 'nowrap',
+                  flexDirection: 'row',
+                  alignItems: 'center'
+              }}>
                 <Button
                     icon={<PlayCircleOutlined />}
-                    type="primary"
                     size="large"
-                    style={{ marginRight: 16 }}
+                    style={{
+                      marginRight: 16,
+                      background: 'linear-gradient(90deg, #ff416c, #ff4b2b)',
+                      border: 'none',
+                      color: '#fff',
+                    }}
                     onClick={handleOpenTrailer}
                 >
                   Xem trailer
                 </Button>
                 <Button
-                    type="default"
                     size="large"
+                    style={{
+                      background: 'linear-gradient(90deg, #ff416c, #ff4b2b)',
+                      border: 'none',
+                      color: '#fff',
+                    }}
                     onClick={() => setDescriptionVisible(true)}
                 >
                   Chi tiết nội dung
@@ -111,42 +144,8 @@ export const MovieDetail = () => {
 
           <Divider style={{ borderColor: '#333', marginTop: 40 }} />
 
-          <div style={{ textAlign: 'center' }}>
-            <Title level={4} style={{ color: '#fff' }}>Lịch chiếu</Title>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '12px',
-              marginBottom: 20
-            }}>
-              {['26', '27', '28'].map((day, index) => (
-                  <Tag
-                      key={index}
-                      color={index === 2 ? 'red' : 'default'}
-                      style={{ padding: '6px 16px', fontSize: 16 }}
-                  >
-                    Th.06 {day}
-                  </Tag>
-              ))}
-            </div>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '12px'
-            }}>
-              {['09:45', '12:00', '14:15', '16:30', '18:45', '21:00', '23:15'].map((time, index) => (
-                  <Button key={index} shape="round">{time}</Button>
-              ))}
-            </div>
-
-            <Paragraph style={{ color: '#ff4d4f', marginTop: 16 }}>
-              Lưu ý: Khán giả dưới 13 tuổi chỉ chọn suất chiếu kết thúc trước 22h và dưới 16 tuổi kết thúc trước 23h.
-            </Paragraph>
-          </div>
+          {/* Component lịch chiếu */}
+          <ShowtimeSelector movieId={movie.id} />
         </div>
 
         {/* Modal chi tiết nội dung */}
