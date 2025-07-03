@@ -1,0 +1,20 @@
+.about-container {
+    width: 70%; /* Chiếm 70% chiều ngang */
+    margin: 0 auto; /* Căn giữa theo chiều ngang */
+    padding: 40px 0; /* Khoảng cách trên dưới */
+    color: #fdd;
+}
+
+.about-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.about-paragraph {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: justify; /* Tuỳ chọn, giúp nội dung thẳng hàng hai bên */
+}

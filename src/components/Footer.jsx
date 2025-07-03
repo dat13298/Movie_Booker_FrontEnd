@@ -1,17 +1,17 @@
 import React from 'react';
 import { FacebookFilled, YoutubeFilled } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
         <div style={{ background: '#16121A', color: 'white', padding: '40px 16px', textAlign: 'center' }}>
             {/* Menu Links */}
             <div style={{ marginBottom: 24, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 24 }}>
-                <span>Chính sách</span>
-                <span>Lịch chiếu</span>
-                {/*<span>Tin tức</span>*/}
-                <span>Giá vé</span>
-                <span>Hỏi đáp</span>
-                <span>Liên hệ</span>
+                <Link to="/policy" style={{ color: 'white' }}>Chính sách</Link>
+                <Link to="/schedule" style={{ color: 'white' }}>Lịch chiếu</Link>
+                <Link to="/ticket-price" style={{ color: 'white' }}>Giá vé</Link>
+                <Link to="/faq" style={{ color: 'white' }}>Hỏi đáp</Link>
+                <Link to="/contact" style={{ color: 'white' }}>Liên hệ</Link>
             </div>
 
             {/* Social Icons */}

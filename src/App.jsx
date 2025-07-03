@@ -27,6 +27,9 @@ import RequireAdmin from "@/components/admin/RequireAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AdminLogin from "@/components/admin/AdminLogin.jsx";
 import SeatMapPage from "@/pages/SeatMapPage.jsx";
+import About from "@/pages/About.jsx";
+import Contact from "@/pages/contacts.jsx";
+import Faqs from "./pages/FAQs.jsx";
 
 export default function App() {
     return (
@@ -41,6 +44,9 @@ export default function App() {
                 <Route path="/movies" element={<Movies />} />
                 <Route path="/theaters" element={<Theaters />} />
                 <Route path="/ticket-price" element={<TicketPrice />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/faq" element={<Faqs />} />
                 <Route path="/coupons" element={<Coupons />} />
                 <Route path="/movie/:id" element={<MovieDetail />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
