@@ -12,7 +12,7 @@ import ChatWidget from "@/components/AiChatLauncher.jsx";
 import ShowTime from "@/pages/ShowTime.jsx";
 import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
-import TicketPrice from "@/pages/TicketPrice.jsx";
+import TicketPrice from "./pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
 import { MovieDetail } from "@/pages/MovieDetail.jsx";
 import FrontendLayout from "@/layouts/FrontendLayout.jsx";
@@ -30,6 +30,7 @@ import SeatMapPage from "@/pages/SeatMapPage.jsx";
 import About from "@/pages/About.jsx";
 import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
+import Policy from "./pages/Policy.jsx";
 
 export default function App() {
     return (
@@ -47,6 +48,7 @@ export default function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/faq" element={<Faqs />} />
+                    <Route path="/policy" element={<Policy />} />
                 <Route path="/coupons" element={<Coupons />} />
                 <Route path="/movie/:id" element={<MovieDetail />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
