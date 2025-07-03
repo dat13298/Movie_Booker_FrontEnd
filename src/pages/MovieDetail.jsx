@@ -106,7 +106,14 @@ export const MovieDetail = () => {
                 Kiểm duyệt: T18 - Phim được phổ biến dành cho người xem từ đủ 18 tuổi
               </Paragraph>
 
-              <div style={{ marginTop: 20 }}>
+              <div style={{
+                  marginTop: 20,
+                  display: 'flex',
+                  gap: 16,
+                  flexWrap: 'nowrap',
+                  flexDirection: 'row',
+                  alignItems: 'center'
+              }}>
                 <Button
                     icon={<PlayCircleOutlined />}
                     size="large"
