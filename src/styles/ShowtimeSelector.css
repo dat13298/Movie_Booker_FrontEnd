@@ -1,0 +1,16 @@
+.showtime-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 8px;
+    gap: 12px;
+}
+@media (min-width: 768px) {
+    .showtime-scroll {
+        justify-content: center;
+        overflow-x: hidden;
+        flex-wrap: wrap;
+    }
+}
+
