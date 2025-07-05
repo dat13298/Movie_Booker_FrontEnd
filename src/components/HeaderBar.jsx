@@ -37,6 +37,7 @@ const HeaderBar = () => {
         { path: '/movies', label: 'PHIM' },
         { path: '/theaters', label: 'RẠP' },
         { path: '/ticket-price', label: 'GIÁ VÉ' },
+        { path: '/about', label: 'GIỚI THIỆU' },
         { path: '/coupons', label: 'ĐỔI ĐIỂM' },
     ];
 
