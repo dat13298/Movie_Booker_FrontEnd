@@ -31,6 +31,15 @@ export default function AdminLayout() {
                     <Menu.Item key="theaters">
                         <Link to="/admin/theaters">Quản lý rạp</Link>
                     </Menu.Item>
+                    <Menu.Item key="screens">
+                        <Link to="/admin/screens">Quản lý phòng chiếu</Link>
+                    </Menu.Item>
+                    <Menu.Item key="show-times">
+                        <Link to="/admin/show-times">Quản xuất chiếu</Link>
+                    </Menu.Item>
+                    <Menu.Item key="regions">
+                        <Link to="/admin/regions">Quản lý vùng</Link>
+                    </Menu.Item>
                 </Menu>
             </Sider>
             <Layout>

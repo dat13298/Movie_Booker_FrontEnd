@@ -30,6 +30,9 @@ import SeatMapPage from "@/pages/SeatMapPage.jsx";
 import About from "@/pages/About.jsx";
 import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
+import {RegionsCMS} from "@/pages/admin/RegionsCMS.jsx";
+import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
+import {ScreenCMS} from "@/pages/admin/ScreenCMS.jsx";
 
 export default function App() {
     return (
@@ -61,6 +64,9 @@ export default function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route path="movies" element={<MovieCMS />} />
                     <Route path="theaters" element={<TheaterCMS />} />
+                    <Route path="screens" element={<ScreenCMS />} />
+                    <Route path="show-times" element={<ShowTimeCMS />} />
+                    <Route path="regions" element={<RegionsCMS />} />
                 </Route>
             </Route>
         </Routes>

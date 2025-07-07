@@ -21,8 +21,7 @@ export default function SeatMap({ showTimeId }) {
         return localStorage.getItem("accessToken");
     };
 
-    useEffect(() => {
-        (async () => {
+    useEffect(() => {(async () => {
             try {
                 await getValidAccessToken();
                 const { data } = await api.get(`/show-times/${showTimeId}/seats`);
