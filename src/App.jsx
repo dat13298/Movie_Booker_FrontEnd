@@ -19,6 +19,7 @@ import FrontendLayout from "@/layouts/FrontendLayout.jsx";
 import MovieDetailMobile from "@/pages/MovieDetailMobile.jsx";
 
 
+
 // Admin
 import AdminLayout from "@/layouts/AdminLayout.jsx";
 import MovieCMS from "@/pages/admin/MovieCMS.jsx";
