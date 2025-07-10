@@ -6,13 +6,7 @@ import MovieFormModal from "@/components/admin/MovieFormModal";
 
 const { Search } = Input;
 
-/**
- * Quản lý danh sách phim (có phân trang, search & filter trực tiếp dưới header)
- * – filter: screenType, is18Plus, movieStatus
- * – giữ trạng thái filter trong state để bảng luôn phản‑chiếu
- */
 export default function MovieCMS() {
-    /* ─────────── state ─────────── */
     const [movies, setMovies] = useState([]);
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [loading, setLoading] = useState(false);
@@ -25,7 +19,6 @@ export default function MovieCMS() {
         status: null,
     });
 
-    /* ─────────── API helper ─────────── */
     const fetchMovies = useCallback(
         async (page = 1, size = 10, kw = "", f = {}) => {
             setLoading(true);
@@ -156,7 +149,7 @@ export default function MovieCMS() {
                 { text: "IMAX", value: "IMAX" },
             ],
             filteredValue: filter.screenType ? [filter.screenType] : null,
-            onFilter: () => true, // luôn true để Ant Design hiển thị icon lọc
+            onFilter: () => true,
         },
         {
             title: "18+",

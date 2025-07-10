@@ -28,6 +28,9 @@ export default function AdminLayout() {
                     <Menu.Item key="movies">
                         <Link to="/admin/movies">Quản lý phim</Link>
                     </Menu.Item>
+                    <Menu.Item key="combos">
+                        <Link to="/admin/combos">Quản lý combo</Link>
+                    </Menu.Item>
                     <Menu.Item key="theaters">
                         <Link to="/admin/theaters">Quản lý rạp</Link>
                     </Menu.Item>

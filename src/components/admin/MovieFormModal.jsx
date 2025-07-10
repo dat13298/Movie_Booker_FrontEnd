@@ -98,7 +98,7 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
             title={initialValues ? "Chỉnh sửa phim" : "Thêm phim mới"}
             okText="Lưu"
             cancelText="Hủy"
-            destroyOnClose
+            destroyOnHidden
             width={800}
         >
             <Form

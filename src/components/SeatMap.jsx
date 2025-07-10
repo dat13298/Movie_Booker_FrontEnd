@@ -1,16 +1,39 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { Button, Tag, Spin, message } from "antd";
-import { Client } from "@stomp/stompjs";
+import React, {useEffect, useState, useMemo} from "react";
+import {Button, Tag, Spin, message, Modal} from "antd";
+import {Client} from "@stomp/stompjs";
 import cls from "classnames";
 import api from "@/api/axios";
 import "./SeatMap.css";
+import {useLocation} from "react-router-dom";
 
-export default function SeatMap({ showTimeId }) {
+export default function SeatMap({showTimeId}) {
     const [seats, setSeats] = useState([]);
     const [selected, setSelected] = useState(new Set());
     const [cd, setCd] = useState(600);
     const [loading, setLoading] = useState(true);
     const [disabledSeats, setDisabledSeats] = useState(new Set());
+    const location = useLocation();
+    const showtime = location.state?.showtime;
+    const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
+    const [selectedCombos, setSelectedCombos] = useState({});
+    const [combos, setCombos] = useState([]);
+
+    if (!showtime) return <div>Không tìm thấy suất chiếu.</div>;
+
+    // Giả lập danh sách combo (sau này có thể gọi từ API)
+    // const combos = [
+    //     { id: 1, name: "Combo 1 (Bắp + Nước)", price: 45000 },
+    //     { id: 2, name: "Combo 2 (2 Nước)", price: 30000 },
+    //     { id: 3, name: "Combo VIP (Bắp lớn + 2 Nước)", price: 60000 },
+    // ];
+
+    const totalCombo = useMemo(() => {
+        return Object.entries(selectedCombos).reduce((sum, [id, qty]) => {
+            const combo = combos.find((c) => c.id === parseInt(id));
+            return sum + (combo?.price || 0) * qty;
+        }, 0);
+    }, [selectedCombos]);
+
 
     const getValidAccessToken = async () => {
         try {
@@ -21,10 +44,11 @@ export default function SeatMap({ showTimeId }) {
         return localStorage.getItem("accessToken");
     };
 
-    useEffect(() => {(async () => {
+    useEffect(() => {
+        (async () => {
             try {
                 await getValidAccessToken();
-                const { data } = await api.get(`/show-times/${showTimeId}/seats`);
+                const {data} = await api.get(`/show-times/${showTimeId}/seats`);
                 setSeats(
                     data.map(s => ({
                         ...s,
@@ -44,6 +68,20 @@ export default function SeatMap({ showTimeId }) {
     }, [showTimeId]);
 
     useEffect(() => {
+        const fetchCombos = async () => {
+            try {
+                const { data } = await api.get("/combos");
+                setCombos(data);
+            } catch (err) {
+                console.error("Lỗi khi tải combos:", err);
+                message.error("Không thể tải danh sách combo");
+            }
+        };
+
+        fetchCombos();
+    }, []);
+
+    useEffect(() => {
         let stompClient;
 
         const connectWebSocket = async () => {
@@ -51,7 +89,7 @@ export default function SeatMap({ showTimeId }) {
 
             stompClient = new Client({
                 brokerURL: "ws://localhost:8080/ws/websocket",
-                connectHeaders: { Authorization: `Bearer ${token}` },
+                connectHeaders: {Authorization: `Bearer ${token}`},
                 // debug: (msg) => console.log("[STOMP]", msg),
                 // onWebSocketError: (err) => console.error("[STOMP ERROR]", err),
                 // onStompError: (frame) => console.error("[STOMP BROKER ERROR]", frame),
@@ -65,7 +103,7 @@ export default function SeatMap({ showTimeId }) {
                             prev.map((s) => {
                                 if (s.id !== evt.seatId) return s;
                                 const newStatus = evt.type === "RELEASED" ? "AVAILABLE" : evt.type;
-                                return { ...s, status: newStatus };
+                                return {...s, status: newStatus};
                             })
                         );
 
@@ -104,14 +142,14 @@ export default function SeatMap({ showTimeId }) {
 
         try {
             if (selected.has(seat.id)) {
-                await api.post("/seats/unlock", { seatId: seat.id, showTimeId });
+                await api.post("/seats/unlock", {seatId: seat.id, showTimeId});
                 setSelected((p) => {
                     const n = new Set(p);
                     n.delete(seat.id);
                     return n;
                 });
             } else if (seat.status === "AVAILABLE") {
-                await api.post("/seats/lock", { seatId: seat.id, showTimeId });
+                await api.post("/seats/lock", {seatId: seat.id, showTimeId});
                 setSelected((p) => new Set(p).add(seat.id));
             }
         } catch {
@@ -133,7 +171,7 @@ export default function SeatMap({ showTimeId }) {
         [selected, seats]
     );
 
-    if (loading) return <Spin />;
+    if (loading) return <Spin/>;
 
     const colMax = Math.max(...seats.map((s) => s.colIdx));
     const chosenNames = [...selected]
@@ -141,22 +179,62 @@ export default function SeatMap({ showTimeId }) {
         .filter(Boolean)
         .join(", ");
 
+    const handlePayment = async () => {
+        const seatIds = [...selected];
+        if (!seatIds.length) return;
+
+        try {
+            const comboList = Object.entries(selectedCombos)
+                .filter(([_, qty]) => qty > 0)
+                .map(([comboId, quantity]) => ({
+                    comboId: parseInt(comboId),
+                    quantity,
+                }));
+
+            const bookingRes = await api.post("/bookings/create", {
+                showTimeId: parseInt(showTimeId),
+                seatIds,
+                comboItems: comboList, // ✅ key đúng như backend yêu cầu
+            });
+
+
+            const { bookingId, amount } = bookingRes.data;
+
+            const paymentRes = await api.post("/payment/create", {
+                bookingId,
+                returnUrl: window.location.origin + "/payment-result"
+            });
+
+            const { paymentUrl } = paymentRes.data;
+
+            window.location.href = paymentUrl;
+
+        } catch (e) {
+            console.error("Lỗi khi thanh toán:", e);
+            message.error("Không thể thanh toán. Vui lòng thử lại.");
+        }
+    };
+
+
     return (
         <div className="booking-wrapper">
             <div className="booking-head">
-        <span>
-          Giờ chiếu: <b>22:25</b>
-        </span>
+                <div>
+                    <div style={{ fontSize: 18, fontWeight: 'bold', color: '#fff' }}>
+                        {showtime.movie?.title}
+                    </div>
+                    <div>
+                        Giờ chiếu: <b>{new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</b>
+                    </div>
+                </div>
                 <div className="countdown">
                     Còn {mm}:{ss}
                 </div>
             </div>
-
-            <div className="screen" />
-
+            <div className="screen"/>
             <div
                 className="seat-map"
-                style={{ gridTemplateColumns: `repeat(${colMax}, 48px)` }}
+                style={{gridTemplateColumns: `repeat(${colMax}, 48px)`}}
             >
                 {seats.map((seat) => (
                     <div
@@ -182,15 +260,79 @@ export default function SeatMap({ showTimeId }) {
                 <Tag color="#e11d48">Đôi</Tag>
             </div>
 
-            <div style={{ color: "#fff", marginTop: 16 }}>
-                Ghế đã chọn: {chosenNames || "—"}
-                <br />
-                Tổng tiền: {total.toLocaleString("vi-VN")} đ
+            <div style={{ color: "#fff", marginTop: 16, fontSize: 16 }}>
+                <div><b>Ghế đã chọn:</b> {chosenNames || "—"}</div>
+                <div><b>Tổng tiền ghế:</b> {total.toLocaleString("vi-VN")} đ</div>
+                <div><b>Tổng tiền combo:</b> {totalCombo.toLocaleString("vi-VN")} đ</div>
+                <div style={{ marginTop: 8, fontSize: 18 }}>
+                    <b style={{ color: "#00e676" }}>Tổng cộng:</b> {(total + totalCombo).toLocaleString("vi-VN")} đ
+                </div>
             </div>
 
-            <Button type="primary" disabled={!selected.size} style={{ marginTop: 12 }}>
+            <Button
+                style={{ marginTop: 12, marginRight: 12 }}
+                onClick={() => setIsFoodModalOpen(true)}
+            >
+                Chọn combo
+            </Button>
+            <Button
+                type="primary"
+                disabled={!selected.size}
+                style={{ marginTop: 12 }}
+                onClick={handlePayment}
+            >
                 Thanh toán
             </Button>
+
+
+            <Modal
+                title="Chọn đồ ăn & combo"
+                open={isFoodModalOpen}
+                onCancel={() => setIsFoodModalOpen(false)}
+                onOk={() => setIsFoodModalOpen(false)}
+                okText="Xác nhận"
+                cancelText="Hủy"
+            >
+                {combos.map((combo) => (
+                    <div key={combo.id} style={{ display: "flex", marginBottom: 16, gap: 12 }}>
+                        <img
+                            src={combo.imageUrl}
+                            alt={combo.name}
+                            style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8 }}
+                        />
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 500 }}>{combo.name}</div>
+                            <div style={{ marginBottom: 8 }}>{combo.description}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span>{combo.price.toLocaleString("vi-VN")} đ</span>
+                                <Button
+                                    onClick={() =>
+                                        setSelectedCombos((prev) => ({
+                                            ...prev,
+                                            [combo.id]: Math.max((prev[combo.id] || 0) - 1, 0),
+                                        }))
+                                    }
+                                >-</Button>
+                                <span>{selectedCombos[combo.id] || 0}</span>
+                                <Button
+                                    onClick={() =>
+                                        setSelectedCombos((prev) => ({
+                                            ...prev,
+                                            [combo.id]: (prev[combo.id] || 0) + 1,
+                                        }))
+                                    }
+                                >+</Button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                <div style={{ marginTop: 16, fontWeight: 500 }}>
+                    Tổng tiền combo: {totalCombo.toLocaleString("vi-VN")} đ
+                </div>
+            </Modal>
+
+
         </div>
     );
 }
