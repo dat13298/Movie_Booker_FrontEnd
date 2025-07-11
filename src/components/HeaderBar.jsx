@@ -28,8 +28,7 @@ const HeaderBar = () => {
     const location = useLocation();
 
     const { auth, updateAuth, userInfo } = useContext(AuthContext);
-    const isLoggedIn = !!auth?.accessToken;
-
+    const isLoggedIn = auth?.accessToken && auth.accessToken.length > 10;
 
     const menuItems = [
         { path: '/', label: 'TRANG CHỦ' },
@@ -44,14 +43,19 @@ const HeaderBar = () => {
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        message.success('Đăng xuất thành công!');
         updateAuth(null);
+        message.success('Đăng xuất thành công!');
     };
 
     const handleBackToLogin = () => {
         setForgotOpen(false);
         setLoginModalVisible(true);
     };
+
+    console.log("accessToken in localStorage:", localStorage.getItem("accessToken"));
+    console.log("auth.accessToken:", auth.accessToken);
+    console.log("isLoggedIn:", isLoggedIn);
+    console.log("userInfo:", userInfo);
 
     const userDropdown = (
         <Dropdown
