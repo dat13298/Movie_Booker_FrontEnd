@@ -173,7 +173,7 @@ export default function ComboCMS() {
                 columns={columns}
                 dataSource={filteredCombos}
                 loading={loading}
-                scroll={{ x: 800 }}
+                scroll={{ x: "max-content" }}
             />
 
             <ComboFormModal
