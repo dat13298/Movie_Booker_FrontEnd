@@ -19,7 +19,6 @@ import FrontendLayout from "@/layouts/FrontendLayout.jsx";
 import MovieDetailMobile from "@/pages/MovieDetailMobile.jsx";
 
 
-
 // Admin
 import AdminLayout from "@/layouts/AdminLayout.jsx";
 import MovieCMS from "@/pages/admin/MovieCMS.jsx";
@@ -30,6 +29,7 @@ import SeatMapPage from "@/pages/SeatMapPage.jsx";
 import About from "@/pages/About.jsx";
 import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
+import Policy from "./pages/Policy.jsx";
 import {RegionsCMS} from "@/pages/admin/RegionsCMS.jsx";
 import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
 import {ScreenCMS} from "@/pages/admin/ScreenCMS.jsx";
@@ -51,6 +51,7 @@ export default function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/faq" element={<Faqs />} />
+                    <Route path="/policy" element={<Policy />} />
                 <Route path="/coupons" element={<Coupons />} />
                 <Route path="/movie/:id" element={<MovieDetail />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
