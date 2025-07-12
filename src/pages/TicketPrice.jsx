@@ -7,6 +7,7 @@ const textColor = "#fdd";
 const bgColor = "#0b0f1a";
 const headerBg = "#001529";
 
+
 const normalColor = "#00ff99";
 const vipColor = "Gold";
 const coupleColor = "#ff0055";
