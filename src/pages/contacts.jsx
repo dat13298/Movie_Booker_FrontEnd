@@ -15,13 +15,13 @@ export default function Contact() {
                         <div style={{ color: "#fdd" }}>
                             <Title level={5} style={{ color: "#fdd" }}>TRỤ SỞ</Title>
                             <Text style={{ color: "#fdd" }}>
-                                Số 87 Láng Hạ, Phường Thành Công, Quận Ba Đình, Tp.Hà Nội
+                                285 Đội Cấn, Quận Ba Đình, Tp. Hà Nội - Điện thoại: 0123.45678
                             </Text>
 
                             <Divider style={{ borderColor: "#333" }} />
 
                             <Title level={5} style={{ color: "#fdd" }}>HỖ TRỢ KHÁCH HÀNG</Title>
-                            <Text style={{ color: "#fdd" }}>Hotline: 024.35141791</Text><br />
+                            <Text style={{ color: "#fdd" }}>Hotline: 0123.45678</Text><br />
                             <Text style={{ color: "#fdd" }}>
                                 Zalo: <Link style={{ color: "#40a9ff" }} href="https://oa.zalo.me/ttcpqg" target="_blank">https://oa.zalo.me/ttcpqg</Link>
                             </Text><br />
@@ -33,14 +33,14 @@ export default function Contact() {
 
                             <Title level={5} style={{ color: "#fdd" }}>LIÊN HỆ QUẢNG CÁO, TỔ CHỨC SỰ KIỆN, THUÊ RẠP</Title>
                             <Text style={{ color: "#fdd" }}>Phòng dịch vụ</Text><br />
-                            <Text style={{ color: "#fdd" }}>Hotline: 024.35142856</Text><br />
+                            <Text style={{ color: "#fdd" }}>Hotline: 0123.45678</Text><br />
                             <Text style={{ color: "#fdd" }}>Email: </Text>
 
                             <Divider style={{ borderColor: "#333" }} />
 
                             <Title level={5} style={{ color: "#fdd" }}>LIÊN HỆ MUA VÉ HỢP ĐỒNG</Title>
                             <Text style={{ color: "#fdd" }}>Phòng Chiếu phim và Trưng bày Điện Ảnh</Text><br />
-                            <Text style={{ color: "#fdd" }}>Hotline: 024.35148647</Text><br />
+                            <Text style={{ color: "#fdd" }}>Hotline: 0123.45678</Text><br />
                             <Text style={{ color: "#fdd" }}>Email: </Text>
                         </div>
                     </Col>
