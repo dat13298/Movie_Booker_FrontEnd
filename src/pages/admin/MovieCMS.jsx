@@ -223,7 +223,7 @@ export default function MovieCMS() {
                 loading={loading}
                 pagination={pagination}
                 onChange={handleTableChange}
-                scroll={{ x: 1300 }}
+                scroll={{ x: "max-content" }}
             />
 
             <MovieFormModal
