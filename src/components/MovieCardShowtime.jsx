@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/MovieCardShowtime.css';
+import dayjs from 'dayjs';
 
-const MovieCardShowtime = ({ movie }) => {
+const MovieCardShowtime = ({ showtime }) => {
     const navigate = useNavigate();
+    const movie = showtime.movie;
 
     const handleClick = () => {
         navigate(`/movie/${movie.id}`, { state: { movie } });
@@ -11,17 +13,19 @@ const MovieCardShowtime = ({ movie }) => {
 
     return (
         <div className="movie-card-showtime" onClick={handleClick} style={{ cursor: 'pointer' }}>
-            <img src={movie.image} alt={movie.title} className="movie-image" />
+            <img src={movie.imageUrl} alt={movie.title} className="movie-image" />
             <div className="movie-details">
                 <h3 className="movie-title">{movie.title}</h3>
                 <p className="movie-meta">
-                    {movie.genre} - {movie.duration} phút <span className="movie-type">{movie.type}</span>
+                    {movie.movieType} - {movie.duration} phút
+                    <span className="movie-type"> - {movie.screenType}</span>
                 </p>
-                <p className="censor">{movie.censor}</p>
+                <p className="censor">{movie.is18Plus ? '18+' : 'P'}</p>
+
                 <div className="showtime-buttons">
-                    {movie.showtimes.map((time, idx) => (
-                        <button key={idx}>{time}</button>
-                    ))}
+                    <button>
+                        {dayjs(showtime.startTime).format('HH:mm')} - {showtime.presentation}
+                    </button>
                 </div>
             </div>
         </div>

@@ -5,6 +5,8 @@ import cls from "classnames";
 import api from "@/api/axios";
 import "./SeatMap.css";
 import {useLocation} from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "@/auth/AuthProvider.jsx";
 
 export default function SeatMap({showTimeId}) {
     const [seats, setSeats] = useState([]);
@@ -17,6 +19,8 @@ export default function SeatMap({showTimeId}) {
     const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
     const [selectedCombos, setSelectedCombos] = useState({});
     const [combos, setCombos] = useState([]);
+    const { userInfo } = useContext(AuthContext);
+    const currentUsername = userInfo?.username;
 
     if (!showtime) return <div>Không tìm thấy suất chiếu.</div>;
 
@@ -107,7 +111,7 @@ export default function SeatMap({showTimeId}) {
                             })
                         );
 
-                        if (evt.type === "LOCKED" || evt.type === "BOOKED") {
+                        if ((evt.type === "LOCKED" || evt.type === "BOOKED") && evt.username !== currentUsername) {
                             setSelected((p) => {
                                 const n = new Set(p);
                                 n.delete(evt.seatId);
