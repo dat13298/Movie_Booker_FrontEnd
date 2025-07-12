@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Result, Spin } from "antd";
+import {Button, Result, Spin} from "antd";
+import {useNavigate} from "react-router-dom";
 
 export default function VnpayReturn() {
     const [status, setStatus] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -26,10 +28,35 @@ export default function VnpayReturn() {
     return (
         <div style={{ marginTop: 100, textAlign: "center" }}>
             <Result
+                style={{ color: "#ffffff" }} // 👈 chữ trắng hoặc màu sáng
                 status={isSuccess ? "success" : "error"}
-                title={isSuccess ? "Payment Successful!" : "Payment Failed!"}
-                subTitle={status}
+                title={
+                    <span style={{ color: "#ffffff" }}>
+            {isSuccess ? "Thanh toán thành công!" : "Thanh toán thất bại!"}
+        </span>
+                }
+                subTitle={<span style={{ color: "#cccccc" }}>{status}</span>}
+                extra={[
+                    <Button
+                        key="home"
+                        type="primary"
+                        onClick={() => navigate("/")}
+                        style={{ width: "fit-content", padding: "0 12px", fontSize: 13 }}
+                    >
+                        Trang chủ
+                    </Button>,
+                    isSuccess && (
+                        <Button
+                            key="mybookings"
+                            onClick={() => navigate("/my-bookings")}
+                            style={{ width: "fit-content", padding: "0 12px", fontSize: 13 }}
+                        >
+                            Vé của tôi
+                        </Button>
+                    )
+                ]}
             />
+
         </div>
     );
 }

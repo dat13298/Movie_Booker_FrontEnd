@@ -1,0 +1,16 @@
+.seat-map-grid {
+    margin-top: 16px;
+}
+
+.seat {
+    cursor: pointer;
+    user-select: none;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.seat:hover {
+    filter: brightness(1.1);
+}

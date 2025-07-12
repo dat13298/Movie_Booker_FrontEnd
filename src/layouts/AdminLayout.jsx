@@ -28,8 +28,20 @@ export default function AdminLayout() {
                     <Menu.Item key="movies">
                         <Link to="/admin/movies">Quản lý phim</Link>
                     </Menu.Item>
+                    <Menu.Item key="combos">
+                        <Link to="/admin/combos">Quản lý combo</Link>
+                    </Menu.Item>
                     <Menu.Item key="theaters">
                         <Link to="/admin/theaters">Quản lý rạp</Link>
+                    </Menu.Item>
+                    {/*<Menu.Item key="seats">*/}
+                    {/*    <Link to="/admin/seats">Quản lý ghế</Link>*/}
+                    {/*</Menu.Item>*/}
+                    <Menu.Item key="show-times">
+                        <Link to="/admin/show-times">Quản lý suất chiếu</Link>
+                    </Menu.Item>
+                    <Menu.Item key="regions">
+                        <Link to="/admin/regions">Quản lý vùng</Link>
                     </Menu.Item>
                 </Menu>
             </Sider>

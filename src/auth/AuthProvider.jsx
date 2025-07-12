@@ -12,10 +12,16 @@ const parseJwt = (t) => {
 
 export const AuthProvider = ({children}) => {
     /* ─── 1. Khởi tạo từ localStorage ─── */
-    const [auth, setAuth] = useState(() => ({
-        accessToken : localStorage.getItem(LS_ACCESS),
-        refreshToken: localStorage.getItem(LS_REFRESH),
-    }));
+    const [auth, setAuth] = useState(() => {
+        const access = localStorage.getItem(LS_ACCESS);
+        const refresh = localStorage.getItem(LS_REFRESH);
+
+        return {
+            accessToken: access || null,
+            refreshToken: refresh || null,
+        };
+    });
+
 
     /* 2. Giải mã userInfo khi accessToken thay đổi */
     const userInfo = useMemo(
@@ -36,17 +42,21 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     /* 4. Hàm cập nhật / xoá token */
-    const updateAuth = ({accessToken, refreshToken} = {}) => {
-        if (!accessToken || !refreshToken) {
+    const updateAuth = (tokens) => {
+        if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
             localStorage.removeItem(LS_ACCESS);
             localStorage.removeItem(LS_REFRESH);
-            setAuth({accessToken:null, refreshToken:null});
+            setAuth({ accessToken: null, refreshToken: null });
             return;
         }
-        localStorage.setItem(LS_ACCESS,  accessToken);
+
+        const { accessToken, refreshToken } = tokens;
+        localStorage.setItem(LS_ACCESS, accessToken);
         localStorage.setItem(LS_REFRESH, refreshToken);
-        setAuth({accessToken, refreshToken});
+        setAuth({ accessToken, refreshToken });
     };
+
+
 
     const logout = () => {
         updateAuth();

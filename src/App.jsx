@@ -12,7 +12,7 @@ import ChatWidget from "@/components/AiChatLauncher.jsx";
 import ShowTime from "@/pages/ShowTime.jsx";
 import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
-import TicketPrice from "./pages/TicketPrice.jsx";
+import TicketPrice from "@/pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
 import { MovieDetail } from "@/pages/MovieDetail.jsx";
 import FrontendLayout from "@/layouts/FrontendLayout.jsx";
@@ -23,7 +23,6 @@ import MovieDetailMobile from "@/pages/MovieDetailMobile.jsx";
 import AdminLayout from "@/layouts/AdminLayout.jsx";
 import MovieCMS from "@/pages/admin/MovieCMS.jsx";
 import TheaterCMS from "@/pages/admin/TheaterCMS.jsx";
-import RequireAdmin from "@/components/admin/RequireAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AdminLogin from "@/components/admin/AdminLogin.jsx";
 import SeatMapPage from "@/pages/SeatMapPage.jsx";
@@ -31,6 +30,10 @@ import About from "@/pages/About.jsx";
 import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
 import Policy from "./pages/Policy.jsx";
+import {RegionsCMS} from "@/pages/admin/RegionsCMS.jsx";
+import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
+import {ScreenCMS} from "@/pages/admin/ScreenCMS.jsx";
+import ComboCMS from "@/pages/admin/ComboCMS.jsx";
 
 export default function App() {
     return (
@@ -62,7 +65,11 @@ export default function App() {
             <Route element={<ProtectedRoute requiredRole="ROLE_ADMIN" />}>
                 <Route path="/admin" element={<AdminLayout />}>
                     <Route path="movies" element={<MovieCMS />} />
+                    <Route path="combos" element={<ComboCMS />} />
                     <Route path="theaters" element={<TheaterCMS />} />
+                    <Route path="screens" element={<ScreenCMS />} />
+                    <Route path="show-times" element={<ShowTimeCMS />} />
+                    <Route path="regions" element={<RegionsCMS />} />
                 </Route>
             </Route>
         </Routes>
