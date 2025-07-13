@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import {
     Button,
     Dropdown,
@@ -7,8 +7,8 @@ import {
     message,
     Space
 } from 'antd';
-import { LogoutOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
-import { AuthContext } from '../auth/AuthProvider.jsx';
+import {LogoutOutlined, UserOutlined, MenuOutlined} from '@ant-design/icons';
+import {AuthContext} from '../auth/AuthProvider.jsx';
 import Login from './Login';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword.jsx';
@@ -16,7 +16,7 @@ import MobileDrawer from './MobileDrawer.jsx';
 import {useLocation, useNavigate} from "react-router-dom";
 import logo from '../assets/logo.png';
 
-const { useBreakpoint } = Grid;
+const {useBreakpoint} = Grid;
 
 const HeaderBar = () => {
     const screens = useBreakpoint();
@@ -27,17 +27,17 @@ const HeaderBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { auth, updateAuth, userInfo } = useContext(AuthContext);
+    const {auth, updateAuth, userInfo} = useContext(AuthContext);
     const isLoggedIn = auth?.accessToken && auth.accessToken.length > 10;
 
     const menuItems = [
-        { path: '/', label: 'TRANG CHỦ' },
-        { path: '/show-time', label: 'LỊCH CHIẾU' },
-        { path: '/movies', label: 'PHIM' },
-        { path: '/theaters', label: 'RẠP' },
-        { path: '/ticket-price', label: 'GIÁ VÉ' },
-        { path: '/about', label: 'GIỚI THIỆU' },
-        { path: '/coupons', label: 'ĐỔI ĐIỂM' },
+        {path: '/', label: 'TRANG CHỦ'},
+        {path: '/show-time', label: 'LỊCH CHIẾU'},
+        {path: '/movies', label: 'PHIM'},
+        {path: '/theaters', label: 'RẠP'},
+        {path: '/ticket-price', label: 'GIÁ VÉ'},
+        {path: '/about', label: 'GIỚI THIỆU'},
+        {path: '/coupons', label: 'ĐỔI ĐIỂM'},
     ];
 
     const handleLogout = () => {
@@ -62,10 +62,18 @@ const HeaderBar = () => {
             menu={{
                 items: [
                     {
+                        key: 'profile',
+                        label: (
+                            <span onClick={() => navigate('/profile')}>
+              <UserOutlined/> Thông tin cá nhân
+            </span>
+                        ),
+                    },
+                    {
                         key: 'logout',
                         label: (
                             <span onClick={handleLogout}>
-                <LogoutOutlined /> Đăng xuất
+                <LogoutOutlined/> Đăng xuất
               </span>
                         ),
                     },
@@ -73,8 +81,8 @@ const HeaderBar = () => {
             }}
             trigger={['click']}
         >
-      <span style={{ cursor: 'pointer' }}>
-        <UserOutlined /> {userInfo?.username || 'Tài khoản'} ▾
+      <span style={{cursor: 'pointer'}}>
+        <UserOutlined/> {userInfo?.username || 'Tài khoản'} ▾
       </span>
         </Dropdown>
     );
@@ -93,19 +101,19 @@ const HeaderBar = () => {
                 }}
             >
                 {/* Logo */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
                     <img
                         src={logo}
                         alt="logo"
                         height={50}
-                        style={{ cursor: 'pointer' }}
+                        style={{cursor: 'pointer'}}
                         onClick={() => navigate('/')}  // quay về trang chủ khi click
                     />
                 </div>
 
                 {/* Menu items */}
                 {screens.md ? (
-                    <div style={{ display: 'flex', gap: 24 }}>
+                    <div style={{display: 'flex', gap: 24}}>
                         {menuItems.map((item) => (
                             <div
                                 key={item.path}
@@ -127,7 +135,7 @@ const HeaderBar = () => {
                     </div>
                 ) : (
                     <MenuOutlined
-                        style={{ fontSize: 20, color: '#fff', cursor: 'pointer' }}
+                        style={{fontSize: 20, color: '#fff', cursor: 'pointer'}}
                         onClick={() => setMobileDrawerVisible(true)}
                     />
                 )}

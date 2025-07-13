@@ -24,10 +24,10 @@ export const AuthProvider = ({children}) => {
 
 
     /* 2. Giải mã userInfo khi accessToken thay đổi */
-    const userInfo = useMemo(
-        () => (auth.accessToken ? parseJwt(auth.accessToken) : null),
-        [auth.accessToken]
-    );
+    const userInfo = useMemo(() => {
+        const raw = localStorage.getItem("userInfo");
+        return raw ? JSON.parse(raw) : (auth.accessToken ? parseJwt(auth.accessToken) : null);
+    }, [auth.accessToken]);
 
     /* 3. Lắng nghe refresh-token thành công từ axios */
     useEffect(() => {
@@ -42,7 +42,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     /* 4. Hàm cập nhật / xoá token */
-    const updateAuth = (tokens) => {
+    const updateAuth = (tokens, user) => {
         if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
             localStorage.removeItem(LS_ACCESS);
             localStorage.removeItem(LS_REFRESH);
@@ -53,10 +53,11 @@ export const AuthProvider = ({children}) => {
         const { accessToken, refreshToken } = tokens;
         localStorage.setItem(LS_ACCESS, accessToken);
         localStorage.setItem(LS_REFRESH, refreshToken);
-        setAuth({ accessToken, refreshToken });
+        if (user) {
+            localStorage.setItem("userInfo", JSON.stringify(user));
+        }
+        setAuth({accessToken, refreshToken});
     };
-
-
 
     const logout = () => {
         updateAuth();

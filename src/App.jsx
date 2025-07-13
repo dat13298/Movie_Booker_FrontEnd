@@ -14,15 +14,17 @@ import Movies from "@/pages/Movies.jsx";
 import Theaters from "@/pages/Theaters.jsx";
 import TicketPrice from "@/pages/TicketPrice.jsx";
 import Coupons from "@/pages/Coupons.jsx";
-import { MovieDetail } from "@/pages/MovieDetail.jsx";
+import {MovieDetail} from "@/pages/MovieDetail.jsx";
 import FrontendLayout from "@/layouts/FrontendLayout.jsx";
 import MovieDetailMobile from "@/pages/MovieDetailMobile.jsx";
+import UserProfile from "@/pages/UserProfile.jsx";
 
 
 // Admin
 import AdminLayout from "@/layouts/AdminLayout.jsx";
 import MovieCMS from "@/pages/admin/MovieCMS.jsx";
 import TheaterCMS from "@/pages/admin/TheaterCMS.jsx";
+import RequireAdmin from "@/components/admin/RequireAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute.jsx";
 import AdminLogin from "@/components/admin/AdminLogin.jsx";
 import SeatMapPage from "@/pages/SeatMapPage.jsx";
@@ -39,6 +41,26 @@ export default function App() {
     return (
         <Routes>
             {/* Frontend layout */}
+            <Route element={<FrontendLayout/>}>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/users" element={<UserList/>}/>
+                <Route path="/profile" element={<UserProfile/>}/>
+                <Route path="/booking/:slug" element={<BookingPage/>}/>
+                <Route path="/show-time" element={<ShowTime/>}/>
+                <Route path="/movies" element={<Movies/>}/>
+                <Route path="/theaters" element={<Theaters/>}/>
+                <Route path="/ticket-price" element={<TicketPrice/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/contact" element={<Contact/>}/>
+                <Route path="/faq" element={<Faqs/>}/>
+                <Route path="/coupons" element={<Coupons/>}/>
+                <Route path="/movie/:id" element={<MovieDetail/>}/>
+                <Route path="/vnpay-return" element={<VnpayReturn/>}/>
+                <Route path="*" element={<NotFound/>}/>
+                <Route path="/show-time/:id/booking" element={<SeatMapPage/>}/>
+                <Route path="/movie/:id" element={<MovieDetailMobile/>}/>
+            </Route>
                 <Route element={<FrontendLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />

@@ -236,3 +236,45 @@ body, *:where(.ant-typography), *:where(.ant-menu), *:where(.ant-btn),
 *:where(.ant-dropdown-menu), *:where(.ant-tag) {
   font-family: 'Poppins', sans-serif !important;
 }
+
+/*CSS for table in User Profile*/
+.retro-table .ant-table {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.retro-table .ant-table-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.retro-table .ant-table-wrapper,
+.retro-table .ant-table-content {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.retro-table .ant-table-thead > tr > th {
+  background: transparent !important;
+  color: #E02828;
+  font-family: monospace;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 2px solid #E02828 !important;
+  border-bottom: 2px solid #E02828 !important;
+}
+
+.retro-table .ant-table-tbody > tr > td {
+  background: transparent !important;
+  color: white;
+  font-family: monospace;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 1px solid #E02828 !important;
+  border-bottom: 1px solid #E02828 !important;
+}
+
+.retro-table .ant-table-tbody > tr:hover > td {
+  background: rgba(224, 40, 40, 0.1) !important;
+}
