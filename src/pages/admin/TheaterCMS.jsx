@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Table, Button, Modal, Form, Input, Space } from "antd";
+import {Table, Button, Modal, Form, Input, Space, Select} from "antd";
+import api from "@/api/axios.js";
+import { useEffect } from "react";
 
 export default function TheaterCMS() {
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
+    const [regions, setRegions] = useState([]);
 
     const columns = [
         {
@@ -19,6 +22,11 @@ export default function TheaterCMS() {
             key: "address",
         },
         {
+            title: "Khu vực",
+            dataIndex: "regionName",
+            key: "regionName",
+        },
+        {
             title: "Hành động",
             key: "action",
             render: (_, record) => (
@@ -30,6 +38,18 @@ export default function TheaterCMS() {
         },
     ];
 
+    useEffect(() => {
+        api.get("/regions?page=0&size=100")
+            .then(res => {
+                const items = res.data?.content || res.data;
+                setRegions(items.map(r => ({ label: r.name, value: r.id })));
+            })
+            .catch(err => {
+                console.error("Lỗi khi tải khu vực:", err);
+            });
+    }, []);
+console.log(data)
+
     const onAdd = () => {
         setEditingRecord(null);
         form.resetFields();
@@ -37,10 +57,16 @@ export default function TheaterCMS() {
     };
 
     const onEdit = (record) => {
+        const matchedRegion = regions.find(r => r.label === record.regionName);
+
         setEditingRecord(record);
-        form.setFieldsValue(record);
+        form.setFieldsValue({
+            ...record,
+            regionId: matchedRegion?.value, // chọn sẵn khu vực nếu tìm thấy
+        });
         setIsModalVisible(true);
     };
+
 
     const onDelete = (key) => {
         Modal.confirm({
@@ -51,16 +77,26 @@ export default function TheaterCMS() {
         });
     };
 
-    const onFinish = (values) => {
-        if (editingRecord) {
-            setData(prev => prev.map(item =>
-                item.key === editingRecord.key ? { ...editingRecord, ...values } : item
-            ));
-        } else {
-            setData(prev => [...prev, { ...values, key: Date.now().toString() }]);
+    const onFinish = async (values) => {
+        try {
+            if (editingRecord && editingRecord.id) {
+                const res = await api.put(`/theaters/${editingRecord.id}`, values);
+                setData(prev =>
+                    prev.map(item =>
+                        item.id === editingRecord.id ? res.data : item
+                    )
+                );
+            } else {
+                const res = await api.post("/theaters", values);
+                setData(prev => [...prev, res.data]);
+            }
+            setIsModalVisible(false);
+            form.resetFields();
+        } catch (error) {
+            console.error("Lỗi khi lưu rạp:", error);
         }
-        setIsModalVisible(false);
     };
+
 
     return (
         <div style={{ padding: 24 }}>
@@ -85,6 +121,14 @@ export default function TheaterCMS() {
                     <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
+                    <Form.Item
+                        name="regionId"
+                        label="Khu vực"
+                        rules={[{ required: true, message: "Vui lòng chọn khu vực" }]}
+                    >
+                        <Select options={regions} placeholder="Chọn khu vực" />
+                    </Form.Item>
+
                 </Form>
             </Modal>
         </div>

@@ -86,6 +86,7 @@ const UserProfile = () => {
 
     return (
         <div style={{backgroundColor: "#0e0e0e", minHeight: "100vh", padding: "20px 50px"}}>
+
             <Title level={2} style={{color: "#fff", marginBottom: 24}}>
                 Thông tin cá nhân
             </Title>
