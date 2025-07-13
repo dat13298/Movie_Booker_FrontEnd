@@ -32,10 +32,10 @@ import About from "@/pages/About.jsx";
 import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
 import Policy from "./pages/Policy.jsx";
-import {RegionsCMS} from "@/pages/admin/RegionsCMS.jsx";
 import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
 import {ScreenCMS} from "@/pages/admin/ScreenCMS.jsx";
 import ComboCMS from "@/pages/admin/ComboCMS.jsx";
+import RegionsCMS from "@/pages/admin/RegionsCMS.jsx";
 
 export default function App() {
     return (
