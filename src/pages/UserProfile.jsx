@@ -7,8 +7,26 @@ const {Title, Text} = Typography;
 const UserProfile = () => {
     const {auth, userInfo} = useContext(AuthContext);
     const [bookingHistory, setBookingHistory] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editableInfo, setEditableInfo] = useState({
+        username: "",
+        email: "",
+        phone: "",
+        gender: "",
+        dob: "",
+    });
 
     useEffect(() => {
+        if (userInfo) {
+            setEditableInfo({
+                username: userInfo.username || "",
+                email: userInfo.email || "",
+                phone: userInfo.phone || "",
+                gender: userInfo.gender || "",
+                dob: userInfo.dob || "",
+            });
+        }
+
         const fetchBookingHistory = async () => {
             try {
                 const response = await fetch("http://localhost:8080/api/bookings/my?page=0&size=100", {
@@ -39,7 +57,18 @@ const UserProfile = () => {
         if (auth?.accessToken) {
             fetchBookingHistory();
         }
-    }, [auth?.accessToken]);
+    }, [auth?.accessToken, userInfo]);
+
+    const inputStyle = {
+        background: "transparent",
+        border: "none",
+        borderBottom: "1px solid #E02828",
+        color: "#fff",
+        fontFamily: "monospace",
+        outline: "none",
+        width: "100%",
+        padding: "4px 0",
+    };
 
     const columns = [
         {title: "Phim", dataIndex: "movie"},
@@ -56,33 +85,134 @@ const UserProfile = () => {
     ];
 
     return (
-        <div style={{backgroundColor: "#0e0e0e", minHeight: "100vh", padding: 20}}>
+        <div style={{backgroundColor: "#0e0e0e", minHeight: "100vh", padding: "20px 50px"}}>
+
             <Title level={2} style={{color: "#fff", marginBottom: 24}}>
                 Thông tin cá nhân
             </Title>
 
             <div style={{marginBottom: 32}}>
-                <p>
-                    <Text strong style={{color: "#E02828"}}>Tên người dùng:</Text>{" "}
-                    <Text style={{color: "white"}}>{userInfo?.username}</Text>
-                </p>
-                <p>
-                    <Text strong style={{color: "#E02828"}}>Email:</Text>{" "}
-                    <Text style={{color: "white"}}>{userInfo?.email}</Text>
-                </p>
-                <p>
-                    <Text strong style={{color: "#E02828"}}>SĐT:</Text>{" "}
-                    <Text style={{color: "white"}}>{userInfo?.phone || "Chưa cập nhật"}</Text>
-                </p>
-                <p>
-                    <Text strong style={{color: "#E02828"}}>Giới tính:</Text>{" "}
-                    <Text style={{color: "white"}}>{userInfo?.gender || "Chưa rõ"}</Text>
-                </p>
-                <p>
-                    <Text strong style={{color: "#E02828"}}>Ngày sinh:</Text>{" "}
-                    <Text style={{color: "white"}}>{userInfo?.dob || "Chưa cập nhật"}</Text>
-                </p>
+                {[
+                    {label: "Tên người dùng", field: "username"},
+                    {label: "Email", field: "email"},
+                    {label: "SĐT", field: "phone"},
+                    {label: "Giới tính", field: "gender"},
+                    {label: "Ngày sinh", field: "dob", type: "date"},
+                ].map(({label, field, type}) => (
+                    <p key={field}>
+                        <Text strong style={{color: "#E02828"}}>{label}:</Text>{" "}
+                        {isEditing ? (
+                            field === "gender" ? (
+                                <select
+                                    value={editableInfo[field]}
+                                    onChange={(e) =>
+                                        setEditableInfo({...editableInfo, [field]: e.target.value})
+                                    }
+                                    style={{...inputStyle, width: "auto"}}
+                                >
+                                    <option value="">--</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            ) : (
+                                <input
+                                    type={type || "text"}
+                                    value={editableInfo[field]}
+                                    onChange={(e) =>
+                                        setEditableInfo({...editableInfo, [field]: e.target.value})
+                                    }
+                                    style={inputStyle}
+                                />
+                            )
+                        ) : (
+                            <Text style={{color: "white"}}>
+                                {editableInfo[field] || "Chưa cập nhật"}
+                            </Text>
+                        )}
+                    </p>
+                ))}
+
+                {/* Nút hành động */}
+                <div style={{marginTop: 16}}>
+                    {!isEditing ? (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            style={{
+                                backgroundColor: "#E02828",
+                                color: "white",
+                                padding: "6px 16px",
+                                fontFamily: "monospace",
+                                border: "none",
+                                borderRadius: 4,
+                                cursor: "pointer",
+                            }}
+                        >
+                            Chỉnh sửa
+                        </button>
+                    ) : (
+                        <>
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const res = await fetch("http://localhost:8080/api/users/me", {
+                                            method: "PUT",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                Authorization: `Bearer ${auth?.accessToken}`,
+                                            },
+                                            body: JSON.stringify(editableInfo),
+                                        });
+                                        if (!res.ok) throw new Error("Cập nhật thất bại");
+                                        alert("Cập nhật thành công!");
+                                        setIsEditing(false);
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert("Có lỗi khi cập nhật");
+                                    }
+                                }}
+                                style={{
+                                    backgroundColor: "#E02828",
+                                    color: "white",
+                                    padding: "6px 16px",
+                                    fontFamily: "monospace",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    cursor: "pointer",
+                                    marginRight: 12,
+                                }}
+                            >
+                                Lưu
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsEditing(false);
+                                    setEditableInfo({
+                                        username: userInfo?.username || "",
+                                        email: userInfo?.email || "",
+                                        phone: userInfo?.phone || "",
+                                        gender: userInfo?.gender || "",
+                                        dob: userInfo?.dob || "",
+                                    });
+                                }}
+                                style={{
+                                    backgroundColor: "transparent",
+                                    color: "#E02828",
+                                    border: "1px solid #E02828",
+                                    padding: "6px 16px",
+                                    margin: "6px 0",
+                                    fontFamily: "monospace",
+                                    borderRadius: 4,
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Hủy
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
+
 
             <Divider style={{borderColor: "#444"}}/>
 
