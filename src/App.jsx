@@ -36,6 +36,7 @@ import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
 import ComboCMS from "@/pages/admin/ComboCMS.jsx";
 import RegionsCMS from "@/pages/admin/RegionsCMS.jsx";
 import ScreenCMS from "@/pages/admin/ScreenCMS.jsx";
+import {UserCMS} from "@/pages/admin/UserCMS.jsx";
 
 export default function App() {
     return (
@@ -89,6 +90,7 @@ export default function App() {
                     <Route path="movies" element={<MovieCMS />} />
                     <Route path="combos" element={<ComboCMS />} />
                     <Route path="theaters" element={<TheaterCMS />} />
+                    <Route path="user-cms" element={<UserCMS />} />
                     <Route path="screens" element={<ScreenCMS />} />
                     <Route path="show-times" element={<ShowTimeCMS />} />
                     <Route path="regions" element={<RegionsCMS />} />
