@@ -117,6 +117,7 @@ const RegionsCMS = () => {
 
     return (
         <div style={{ padding: 24 }}>
+            <h2>🎬 Quản lý Vùng</h2>
             <Button type="primary" onClick={handleAdd} style={{ marginBottom: 16 }}>
                 Thêm Vùng
             </Button>

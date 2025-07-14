@@ -33,8 +33,7 @@ const HeaderBar = () => {
     const menuItems = [
         {path: '/', label: 'TRANG CHỦ'},
         {path: '/show-time', label: 'LỊCH CHIẾU'},
-        {path: '/movies', label: 'PHIM'},
-        {path: '/theaters', label: 'RẠP'},
+        // {path: '/theaters', label: 'RẠP'},
         {path: '/ticket-price', label: 'GIÁ VÉ'},
         {path: '/about', label: 'GIỚI THIỆU'},
         {path: '/coupons', label: 'ĐỔI ĐIỂM'},

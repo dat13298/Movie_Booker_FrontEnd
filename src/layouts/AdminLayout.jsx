@@ -31,8 +31,8 @@ export default function AdminLayout() {
                     <Menu.Item key="combos">
                         <Link to="/admin/combos">Quản lý combo</Link>
                     </Menu.Item>
-                    <Menu.Item key="theaters">
-                        <Link to="/admin/theaters">Quản lý rạp</Link>
+                    <Menu.Item key="theater-cms">
+                        <Link to="/admin/theater-cms">Quản lý rạp</Link>
                     </Menu.Item>
                     <Menu.Item key="screens">
                         <Link to="/admin/screens">Quản lý phòng chiếu</Link>

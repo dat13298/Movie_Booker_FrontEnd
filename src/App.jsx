@@ -33,9 +33,9 @@ import Contact from "@/pages/contacts.jsx";
 import Faqs from "./pages/FAQs.jsx";
 import Policy from "./pages/Policy.jsx";
 import {ShowTimeCMS} from "@/pages/admin/ShowTimeCMS.jsx";
-import {ScreenCMS} from "@/pages/admin/ScreenCMS.jsx";
 import ComboCMS from "@/pages/admin/ComboCMS.jsx";
 import RegionsCMS from "@/pages/admin/RegionsCMS.jsx";
+import ScreenCMS from "@/pages/admin/ScreenCMS.jsx";
 
 export default function App() {
     return (
@@ -68,7 +68,7 @@ export default function App() {
                 <Route path="/booking/:slug" element={<BookingPage />} />
                 <Route path="/show-time" element={<ShowTime />} />
                 <Route path="/movies" element={<Movies />} />
-                <Route path="/theaters" element={<Theaters />} />
+                <Route path="/theater-cms" element={<Theaters />} />
                 <Route path="/ticket-price" element={<TicketPrice />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
