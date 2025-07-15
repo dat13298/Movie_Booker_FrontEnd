@@ -7,7 +7,7 @@ import {
     message,
     Space
 } from 'antd';
-import {LogoutOutlined, UserOutlined, MenuOutlined} from '@ant-design/icons';
+import {LogoutOutlined, UserOutlined, MenuOutlined, GiftOutlined} from '@ant-design/icons';
 import {AuthContext} from '../auth/AuthProvider.jsx';
 import Login from './Login';
 import Register from './Register';
@@ -64,8 +64,16 @@ const HeaderBar = () => {
                         key: 'profile',
                         label: (
                             <span onClick={() => navigate('/profile')}>
-              <UserOutlined/> Thông tin cá nhân
-            </span>
+                                <UserOutlined/> Thông tin cá nhân
+                            </span>
+                            ),
+                    },
+                    {
+                        key: 'coupon-storage',
+                        label: (
+                            <span onClick={() => navigate('/coupon-storage')}>
+                                 <GiftOutlined /> Kho coupon
+                            </span>
                         ),
                     },
                     {

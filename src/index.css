@@ -283,3 +283,34 @@ body, *:where(.ant-typography), *:where(.ant-menu), *:where(.ant-btn),
   height: 32px !important;
   line-height: normal !important;
 }
+/* Tabs container */
+.custom-dark-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.custom-dark-tabs .ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+.custom-dark-tabs .ant-tabs-tab:hover {
+  color: #fff;
+}
+
+/* Tab đang được chọn */
+.custom-dark-tabs .ant-tabs-tab-active,
+.custom-dark-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c) !important;
+  color: #fff !important;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Ẩn gạch dưới */
+.custom-dark-tabs .ant-tabs-ink-bar {
+  background: transparent !important;
+}

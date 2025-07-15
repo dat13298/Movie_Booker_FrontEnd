@@ -37,6 +37,7 @@ import ComboCMS from "@/pages/admin/ComboCMS.jsx";
 import RegionsCMS from "@/pages/admin/RegionsCMS.jsx";
 import ScreenCMS from "@/pages/admin/ScreenCMS.jsx";
 import {UserCMS} from "@/pages/admin/UserCMS.jsx";
+import {MyCouponPage} from "@/pages/MyCouponPage.jsx";
 
 export default function App() {
     return (
@@ -78,6 +79,7 @@ export default function App() {
                 <Route path="/coupons" element={<Coupons />} />
                 <Route path="/movie/:id" element={<MovieDetail />} />
                 <Route path="/vnpay-return" element={<VnpayReturn />} />
+                <Route path="/coupon-storage" element={<MyCouponPage />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/show-time/:id/booking" element={<SeatMapPage />} />
                 <Route path="/movie/:id" element={<MovieDetailMobile />} />
