@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Select, message, Tag, Popover } from "antd";
+import {Modal, Select, message, Tag, Popover, Spin, Button} from "antd";
 import api from "@/api/axios";
 
 const { Option } = Select;
@@ -129,11 +129,19 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
             open={open}
             title="Tùy chỉnh sơ đồ ghế"
             onCancel={onClose}
-            onOk={handleSave}
-            confirmLoading={saving}
             width={1100}
+            footer={
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                    <Button onClick={onClose}>Hủy</Button>
+                    <Button type="primary" onClick={handleSave} loading={saving}>
+                        Lưu
+                    </Button>
+                </div>
+            }
+
         >
-            <div style={{ display: "flex", justifyContent: "center" }}>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
                 <div
                     style={{
                         display: "grid",
@@ -205,13 +213,18 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
                                                 ))}
                                             </Select>
                                             <div style={{ marginTop: 8, textAlign: "right" }}>
-                                                <a
-                                                    onClick={() => handleSeatClick(rowIdx, colIdx)}
-                                                    style={{ color: "red" }}
-                                                >
-                                                    Xóa ghế
-                                                </a>
+                                                {deletingSeatId === seat.id ? (
+                                                    <Spin size="small" />
+                                                ) : (
+                                                    <a
+                                                        onClick={() => handleSeatClick(rowIdx, colIdx)}
+                                                        style={{ color: "red" }}
+                                                    >
+                                                        Xoá ghế
+                                                    </a>
+                                                )}
                                             </div>
+
                                         </div>
                                     }
                                     title="Loại ghế"

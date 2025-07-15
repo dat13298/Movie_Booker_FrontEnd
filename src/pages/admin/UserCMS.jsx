@@ -155,9 +155,14 @@ export const UserCMS = () => {
                     open={open}
                     title={editing ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}
                     onCancel={() => setOpen(false)}
-                    onOk={handleSubmit}
+                    footer={
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                            <Button onClick={() => setOpen(false)}>Hủy</Button>
+                            <Button type="primary" onClick={handleSubmit}>Lưu</Button>
+                        </div>
+                    }
                 >
-                    <Form layout="vertical" form={form}>
+                <Form layout="vertical" form={form}>
                         <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>

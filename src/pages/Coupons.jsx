@@ -74,18 +74,18 @@ export default function Coupons() {
             priceValue: selectedPrice.priceValue,
         })
             .then((res) => {
-                const result = res.data?.data;
+                const raw = res.data;
 
-                if (result?.code === 200) {
+                if (raw.code === 200) {
                     Modal.success({
                         title: "🎉 Đổi voucher thành công",
-                        content: result.message || "Bạn đã đổi điểm thành công!",
+                        content: raw.data || "Bạn đã đổi điểm thành công!",
                     });
                     setGiftDetailVisible(false);
                 } else {
                     Modal.error({
                         title: "❌ Đổi voucher thất bại",
-                        content: result?.message || "Có lỗi xảy ra khi đổi điểm",
+                        content: raw.message || "Có lỗi xảy ra khi đổi điểm",
                     });
                 }
             })

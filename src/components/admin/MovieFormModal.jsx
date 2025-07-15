@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 import {Modal, Form, Input, InputNumber, DatePicker, Select, Upload, Button, Switch, Row, Col, message} from "antd";
 import dayjs from "dayjs";
-import { UploadOutlined } from "@ant-design/icons";
+import {UploadOutlined} from "@ant-design/icons";
 
-const { TextArea } = Input;
-const { Option } = Select;
+const {TextArea} = Input;
+const {Option} = Select;
 
-export default function MovieFormModal({ visible, onClose, onSubmit, initialValues }) {
+export default function MovieFormModal({visible, onClose, onSubmit, initialValues}) {
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -94,29 +94,39 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
         <Modal
             open={visible}
             onCancel={onClose}
-            onOk={() => form.submit()}
             title={initialValues ? "Chỉnh sửa phim" : "Thêm phim mới"}
-            okText="Lưu"
-            cancelText="Hủy"
-            destroyOnHidden
+            destroyOnClose
             width={800}
+            footer={
+                <div style={{display: "flex", justifyContent: "flex-end", gap: 8}}>
+                    <Button onClick={onClose}>Hủy</Button>
+                    <Button
+                        type="primary"
+                        onClick={() => form.submit()}
+                        style={{padding: "0 16px", height: 32}}
+                    >
+                        Lưu
+                    </Button>
+                </div>
+            }
         >
+
             <Form
                 form={form}
                 layout="vertical"
                 onFinish={handleFinish}
-                initialValues={{ movieStatus: "COMING_SOON" }}
+                initialValues={{movieStatus: "COMING_SOON"}}
             >
                 {/* Hàng 1: Tên & Mã phim */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="title" label="Tên phim" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="title" label="Tên phim" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="movieCode" label="Mã phim" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="movieCode" label="Mã phim" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -124,13 +134,13 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                 {/* Hàng 2: Thể loại & Ngôn ngữ */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="movieType" label="Thể loại" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="movieType" label="Thể loại" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="language" label="Ngôn ngữ" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="language" label="Ngôn ngữ" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -138,13 +148,13 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                 {/* Hàng 3: Đạo diễn & Diễn viên */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="director" label="Đạo diễn" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="director" label="Đạo diễn" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="actors" label="Diễn viên" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="actors" label="Diễn viên" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -152,13 +162,13 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                 {/* Hàng 4: Thời lượng & Xếp hạng */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="duration" label="Thời lượng (phút)" rules={[{ required: true }]}>
-                            <InputNumber min={1} style={{ width: "100%" }} />
+                        <Form.Item name="duration" label="Thời lượng (phút)" rules={[{required: true}]}>
+                            <InputNumber min={1} style={{width: "100%"}}/>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="rating" label="Xếp hạng" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="rating" label="Xếp hạng" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -166,13 +176,13 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                 {/* Hàng 5: Ngày phát hành & Ngày khởi chiếu */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="releaseDate" label="Ngày phát hành" rules={[{ required: true }]}>
-                            <DatePicker style={{ width: "100%" }} />
+                        <Form.Item name="releaseDate" label="Ngày phát hành" rules={[{required: true}]}>
+                            <DatePicker style={{width: "100%"}}/>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="premiereDate" label="Ngày khởi chiếu" rules={[{ required: true }]}>
-                            <DatePicker style={{ width: "100%" }} />
+                        <Form.Item name="premiereDate" label="Ngày khởi chiếu" rules={[{required: true}]}>
+                            <DatePicker style={{width: "100%"}}/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -180,7 +190,7 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                 {/* Hàng 6: Trạng thái & Loại màn hình */}
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item name="movieStatus" label="Trạng thái" rules={[{ required: true }]}>
+                        <Form.Item name="movieStatus" label="Trạng thái" rules={[{required: true}]}>
                             <Select>
                                 <Option value="COMING_SOON">Sắp chiếu</Option>
                                 <Option value="NOW_SHOWING">Đang chiếu</Option>
@@ -189,8 +199,8 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item name="screenType" label="Loại màn hình" rules={[{ required: true }]}>
-                            <Input />
+                        <Form.Item name="screenType" label="Loại màn hình" rules={[{required: true}]}>
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -203,7 +213,7 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                             label="Phim 18+"
                             valuePropName="checked"
                         >
-                            <Switch checkedChildren="Có" unCheckedChildren="Không" />
+                            <Switch checkedChildren="Có" unCheckedChildren="Không"/>
                         </Form.Item>
                     </Col>
                     <Col span={18}>
@@ -211,11 +221,11 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                             name="trailerUrl"
                             label="URL Trailer"
                             rules={[
-                                { required: true, message: "Vui lòng nhập URL Trailer" },
-                                { type: "url", message: "URL không hợp lệ" },
+                                {required: true, message: "Vui lòng nhập URL Trailer"},
+                                {type: "url", message: "URL không hợp lệ"},
                             ]}
                         >
-                            <Input />
+                            <Input/>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -233,15 +243,15 @@ export default function MovieFormModal({ visible, onClose, onSubmit, initialValu
                             // rules={[{ required: true, message: "Vui lòng chọn ảnh" }]}
                         >
                             <Upload listType="picture" beforeUpload={() => false} maxCount={1}>
-                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                                <Button icon={<UploadOutlined/>}>Chọn ảnh</Button>
                             </Upload>
                         </Form.Item>
                     </Col>
                 </Row>
 
                 {/* Hàng 9: Mô tả toàn chiều rộng */}
-                <Form.Item name="description" label="Mô tả" rules={[{ required: true }]}>
-                    <TextArea rows={3} />
+                <Form.Item name="description" label="Mô tả" rules={[{required: true}]}>
+                    <TextArea rows={3}/>
                 </Form.Item>
             </Form>
         </Modal>

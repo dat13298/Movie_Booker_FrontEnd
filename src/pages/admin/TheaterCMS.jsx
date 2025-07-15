@@ -9,6 +9,11 @@ export default function TheaterCMS() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
     const [regions, setRegions] = useState([]);
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 10,
+        total: 0,
+    });
 
     const columns = [
         {
@@ -32,11 +37,53 @@ export default function TheaterCMS() {
             render: (_, record) => (
                 <Space>
                     <Button onClick={() => onEdit(record)}>Sửa</Button>
-                    <Button danger onClick={() => onDelete(record.key)}>Xóa</Button>
+                    <Button danger onClick={() => onDelete(record.id)}>Xóa</Button>
                 </Space>
             ),
-        },
+        }
     ];
+
+    useEffect(() => {
+        fetchTheaters(pagination.current, pagination.pageSize);
+    }, []);
+
+    const fetchTheaters = async (page = 1, pageSize = 10) => {
+        try {
+            const res = await api.get("/theaters", {
+                params: {
+                    page: page - 1,
+                    size: pageSize,
+                },
+            });
+
+            setData(res.data.content || []);
+            setPagination({
+                current: page,
+                pageSize: pageSize,
+                total: res.data.totalElements,
+            });
+        } catch (err) {
+            console.error("Lỗi khi tải danh sách rạp:", err);
+        }
+    };
+    const handleTableChange = (pagination) => {
+        fetchTheaters(pagination.current, pagination.pageSize);
+    };
+
+
+    const onDelete = (id) => {
+        Modal.confirm({
+            title: "Bạn có chắc chắn muốn xóa rạp này?",
+            onOk: async () => {
+                try {
+                    await api.delete(`/theaters/${id}`);
+                    setData(prev => prev.filter(item => item.id !== id));
+                } catch (err) {
+                    console.error("Lỗi khi xoá:", err);
+                }
+            },
+        });
+    };
 
     useEffect(() => {
         api.get("/regions?page=0&size=100")
@@ -62,19 +109,9 @@ console.log(data)
         setEditingRecord(record);
         form.setFieldsValue({
             ...record,
-            regionId: matchedRegion?.value, // chọn sẵn khu vực nếu tìm thấy
+            regionId: matchedRegion?.value,
         });
         setIsModalVisible(true);
-    };
-
-
-    const onDelete = (key) => {
-        Modal.confirm({
-            title: "Bạn có chắc chắn muốn xóa rạp này?",
-            onOk: () => {
-                setData(prev => prev.filter(item => item.key !== key));
-            },
-        });
     };
 
     const onFinish = async (values) => {
@@ -104,17 +141,42 @@ console.log(data)
             <Button type="primary" onClick={onAdd} style={{ marginBottom: 16 }}>
                 Thêm Rạp
             </Button>
-            <Table columns={columns} dataSource={data} />
-
+            <Table
+                columns={columns}
+                dataSource={data}
+                rowKey="id"
+                pagination={pagination}
+                onChange={handleTableChange}
+            />
             <Modal
                 title={editingRecord ? "Chỉnh sửa Rạp" : "Thêm Rạp"}
                 open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                onOk={() => form.submit()}
-                okText="Lưu"
-                cancelText="Hủy"
+                onCancel={() => {
+                    setIsModalVisible(false);
+                    form.resetFields();
+                    setEditingRecord(null);
+                }}
+                footer={
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button onClick={() => {
+                            setIsModalVisible(false);
+                            form.resetFields();
+                            setEditingRecord(null);
+                        }}>
+                            Hủy
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={() => form.submit()}
+                            style={{ padding: "0 16px", height: 32 }}
+                        >
+                            Lưu
+                        </Button>
+                    </div>
+                }
             >
-                <Form form={form} layout="vertical" onFinish={onFinish}>
+
+            <Form form={form} layout="vertical" onFinish={onFinish}>
                     <Form.Item name="name" label="Tên rạp" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
@@ -128,7 +190,6 @@ console.log(data)
                     >
                         <Select options={regions} placeholder="Chọn khu vực" />
                     </Form.Item>
-
                 </Form>
             </Modal>
         </div>

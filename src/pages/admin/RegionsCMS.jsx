@@ -134,10 +134,18 @@ const RegionsCMS = () => {
                 open={modalVisible}
                 title={editingRegion ? "Sửa Vùng" : "Thêm Vùng"}
                 onCancel={() => setModalVisible(false)}
-                onOk={handleOk}
                 destroyOnClose
+                footer={
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button onClick={() => setModalVisible(false)}>Hủy</Button>
+                        <Button type="primary" onClick={handleOk}>
+                            Lưu
+                        </Button>
+                    </div>
+                }
             >
-                <Form form={form} layout="vertical">
+
+            <Form form={form} layout="vertical">
                     <Form.Item
                         name="name"
                         label="Tên vùng"

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select } from "antd";
+import React, {useEffect} from "react";
+import {Modal, Form, Input, DatePicker, Select} from "antd";
 import dayjs from "dayjs";
 
-const { Option } = Select;
+const {Option} = Select;
 
 export default function ShowTimeFormModal({
                                               open,
@@ -44,14 +44,44 @@ export default function ShowTimeFormModal({
             title={initialValues.id ? "Chỉnh sửa suất chiếu" : "Thêm suất chiếu"}
             open={open}
             onCancel={onCancel}
-            onOk={handleOk}
             destroyOnClose
+            footer={
+                <div style={{display: "flex", justifyContent: "flex-end", gap: 8}}>
+                    <button
+                        onClick={onCancel}
+                        style={{
+                            padding: "4px 16px",
+                            borderRadius: 4,
+                            border: "1px solid #d9d9d9",
+                            background: "#fff",
+                            cursor: "pointer"
+                        }}
+                    >
+                        Huỷ
+                    </button>
+                    <button
+                        onClick={handleOk}
+                        style={{
+                            padding: "4px 16px",
+                            borderRadius: 4,
+                            border: "none",
+                            background: "#1677ff",
+                            color: "#fff",
+                            fontWeight: 500,
+                            cursor: "pointer"
+                        }}
+                    >
+                        {initialValues.id ? "Cập nhật" : "Thêm mới"}
+                    </button>
+                </div>
+            }
         >
+
             <Form layout="vertical" form={form}>
                 <Form.Item
                     name="movieId"
                     label="Phim"
-                    rules={[{ required: true, message: "Vui lòng chọn phim" }]}
+                    rules={[{required: true, message: "Vui lòng chọn phim"}]}
                 >
                     <Select placeholder="Chọn phim">
                         {movieOptions.map((m) => (
@@ -65,7 +95,7 @@ export default function ShowTimeFormModal({
                 <Form.Item
                     name="screenId"
                     label="Phòng chiếu"
-                    rules={[{ required: true, message: "Vui lòng chọn phòng" }]}
+                    rules={[{required: true, message: "Vui lòng chọn phòng"}]}
                 >
                     <Select placeholder="Chọn phòng">
                         {roomOptions.map((r) => (
@@ -79,23 +109,23 @@ export default function ShowTimeFormModal({
                 <Form.Item
                     name="startTime"
                     label="Thời gian bắt đầu"
-                    rules={[{ required: true, message: "Vui lòng chọn thời gian bắt đầu" }]}
+                    rules={[{required: true, message: "Vui lòng chọn thời gian bắt đầu"}]}
                 >
-                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: "100%" }} />
+                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{width: "100%"}}/>
                 </Form.Item>
 
                 <Form.Item
                     name="endTime"
                     label="Thời gian kết thúc"
-                    rules={[{ required: true, message: "Vui lòng chọn thời gian kết thúc" }]}
+                    rules={[{required: true, message: "Vui lòng chọn thời gian kết thúc"}]}
                 >
-                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: "100%" }} />
+                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{width: "100%"}}/>
                 </Form.Item>
 
                 <Form.Item
                     name="presentation"
                     label="Định dạng chiếu"
-                    rules={[{ required: true, message: "Vui lòng chọn định dạng" }]}
+                    rules={[{required: true, message: "Vui lòng chọn định dạng"}]}
                 >
                     <Select placeholder="Chọn định dạng">
                         <Option value="2D">2D</Option>

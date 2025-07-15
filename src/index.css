@@ -278,3 +278,8 @@ body, *:where(.ant-typography), *:where(.ant-menu), *:where(.ant-btn),
 .retro-table .ant-table-tbody > tr:hover > td {
   background: rgba(224, 40, 40, 0.1) !important;
 }
+.custom-ok-btn {
+  padding: 0 !important;
+  height: 32px !important;
+  line-height: normal !important;
+}

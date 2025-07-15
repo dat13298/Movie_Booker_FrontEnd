@@ -92,15 +92,25 @@ export default function ComboFormModal({ visible, onClose, onSubmit, initialValu
         <Modal
             open={visible}
             onCancel={onClose}
-            onOk={() => form.submit()}
             title={initialValues ? "Chỉnh sửa combo" : "Thêm combo mới"}
-            okText="Lưu"
-            cancelText="Hủy"
-            destroyOnHidden
+            destroyOnClose
             forceRender
             width={600}
+            footer={
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                    <Button onClick={onClose}>Hủy</Button>
+                    <Button
+                        type="primary"
+                        onClick={() => form.submit()}
+                        style={{ padding: "0 16px", height: 32 }}
+                    >
+                        Lưu
+                    </Button>
+                </div>
+            }
         >
-            <Form
+
+    <Form
                 form={form}
                 layout="vertical"
                 onFinish={handleFinish}

@@ -122,17 +122,36 @@ export default function ScreenCMS() {
 
             <Modal
                 open={open}
+                title={editing ? "Chỉnh sửa phòng chiếu" : "Thêm phòng chiếu"}
                 onCancel={() => {
                     setOpen(false);
                     form.resetFields();
                     setEditing(null);
                 }}
-                title={editing ? "Chỉnh sửa phòng chiếu" : "Thêm phòng chiếu"}
-                onOk={handleSubmit}
-                okText={editing ? "Cập nhật" : "Thêm mới"}
-                cancelText="Huỷ"
+                footer={(
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button onClick={() => {
+                            setOpen(false);
+                            form.resetFields();
+                            setEditing(null);
+                        }}>
+                            Huỷ
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={handleSubmit}
+                            style={{
+                                padding: "0 15px",
+                                height: 32,
+                                lineHeight: "32px",
+                            }}
+                        >
+                            {editing ? "Cập nhật" : "Thêm mới"}
+                        </Button>
+                    </div>
+                )}
             >
-                <Form form={form} layout="vertical">
+            <Form form={form} layout="vertical">
                     <Form.Item
                         name="name"
                         label="Tên phòng chiếu"
