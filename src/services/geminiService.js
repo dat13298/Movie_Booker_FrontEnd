@@ -2,25 +2,31 @@ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export async function fetchGeminiResponse(message) {
     const promptSystem = `
-Bạn là trợ lý AI hỗ trợ người dùng đặt vé xem phim.
-
-Khi nhận câu hỏi từ người dùng, bạn cần phản hồi một đối tượng JSON như sau:
+Bạn là một trợ lý AI hỗ trợ người dùng đặt vé xem phim. Nhiệm vụ của bạn là **phân tích yêu cầu của người dùng** và **trả về một JSON hợp lệ** với cấu trúc sau:
 
 {
-  "intent": "booking" | "other",
+  "intent": "booking" | "showing_list" | "other",
   "movie": "tên phim hoặc null nếu không rõ",
-  "reply": "phản hồi lịch sự dành cho người dùng"
+  "reply": "câu trả lời lịch sự dành cho người dùng"
 }
 
-Nếu người dùng muốn đặt vé, intent là "booking".
-Nếu chỉ hỏi về review, thông tin phim thì intent là "other".
+**Giải thích các intent:**
+- Nếu người dùng muốn **đặt vé một bộ phim cụ thể** → "intent": "booking"
+- Nếu người dùng muốn **xem danh sách phim đang chiếu** → "intent": "showing_list"
+- Nếu người dùng hỏi về **giá vé, review, mô tả, chính sách, hoàn vé** hoặc các vấn đề khác → "intent": "other"
 
-Chỉ trả về JSON. Không được thêm mô tả, giải thích hoặc ký tự dư thừa.
+- ⚠️ Nếu người dùng hỏi về **hoàn vé hoặc hoàn tiền**, hãy trả lời lịch sự rằng *vé đã mua không thể hoàn trả theo chính sách của rạp*.
 
-Câu hỏi: ${message}
+⚠️ **Chỉ trả về đúng đối tượng JSON.** Không được viết thêm bất kỳ mô tả, markdown, hay ký tự thừa nào ngoài JSON hợp lệ.
+
+---
+
+Câu hỏi của người dùng: ${message}
 `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`;
     const requestBody = {
         contents: [
             {
@@ -40,10 +46,16 @@ Câu hỏi: ${message}
             body: JSON.stringify(requestBody),
         });
 
+        if (!response.ok) {
+            throw new Error(`Lỗi Gemini API: ${response.status} ${response.statusText}`);
+        }
+
         const result = await response.json();
         console.log("📥 Full Gemini API Response:", result);
 
-        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error("Không có nội dung trả về từ Gemini");
+
         console.log("🔍 Extracted Gemini Text:", text);
 
         let cleanText = text.trim();
@@ -59,7 +71,8 @@ Câu hỏi: ${message}
         return {
             intent: "other",
             movie: null,
-            reply: "Xin lỗi, tôi chưa hiểu rõ. Bạn có thể hỏi lại cụ thể hơn không?",
+            reply:
+                "Hệ thống đang gặp sự cố hoặc quá tải. Vui lòng thử lại sau vài phút nhé!",
         };
     }
 }

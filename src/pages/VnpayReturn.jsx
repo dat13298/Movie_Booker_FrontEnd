@@ -11,9 +11,13 @@ export default function VnpayReturn() {
 
         fetch(`http://localhost:8080/api/payment/vnpay-return?${params.toString()}`)
             .then((res) => res.text())
-            .then((msg) => setStatus(msg))
+            .then(async (msg) => {
+                setStatus(msg);
+                console.log("Kết quả thanh toán:", msg);
+            })
             .catch(() => setStatus("An error occurred while confirming the payment."));
     }, []);
+
 
     if (!status) {
         return (
@@ -23,12 +27,15 @@ export default function VnpayReturn() {
         );
     }
 
-    const isSuccess = status.toLowerCase().includes("success");
+    const params = new URLSearchParams(window.location.search);
+    const responseCode = params.get("vnp_ResponseCode");
+    const isSuccess = responseCode === "00";
+
 
     return (
         <div style={{ marginTop: 100, textAlign: "center" }}>
             <Result
-                style={{ color: "#ffffff" }} // 👈 chữ trắng hoặc màu sáng
+                style={{ color: "#ffffff" }}
                 status={isSuccess ? "success" : "error"}
                 title={
                     <span style={{ color: "#ffffff" }}>
@@ -48,7 +55,7 @@ export default function VnpayReturn() {
                     isSuccess && (
                         <Button
                             key="mybookings"
-                            onClick={() => navigate("/my-bookings")}
+                            onClick={() => navigate("/profile")}
                             style={{ width: "fit-content", padding: "0 12px", fontSize: 13 }}
                         >
                             Vé của tôi

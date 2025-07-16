@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Tag, Button, Typography, Spin } from 'antd';
+import React, {useContext, useEffect, useState} from 'react';
+import { Tag, Button, Typography, Spin, message } from 'antd';
 import '../styles/ShowtimeSelector.css';
 import api from "@/api/axios.js";
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '@/auth/AuthProvider.jsx';
 
 const { Paragraph } = Typography;
 
@@ -31,6 +32,8 @@ const ShowtimeSelector = ({ movieId }) => {
     const [groupedShowtimes, setGroupedShowtimes] = useState({});
     const [selectedDate, setSelectedDate] = useState(null);
     const navigate = useNavigate();
+    const { userInfo } = useContext(AuthContext);
+
 
     useEffect(() => {
         if (movieId) {
@@ -109,7 +112,15 @@ const ShowtimeSelector = ({ movieId }) => {
                             marginRight: 8,
                             whiteSpace: 'nowrap',
                         }}
-                        onClick={() => navigate(`/show-time/${st.id}/booking`, { state: { showtime: st } })}
+                        onClick={() => {
+                            if (!userInfo) {
+                                message.warning("Vui lòng đăng nhập để tiếp tục đặt vé.");
+                                return;
+                            }
+
+                            navigate(`/show-time/${st.id}/booking`, { state: { showtime: st } });
+                        }}
+
                     >
                         {formatTime(st.startTime)} – Phòng {st.screenId}
                     </Button>

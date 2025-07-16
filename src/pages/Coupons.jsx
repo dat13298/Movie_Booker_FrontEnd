@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import CategorySelector from "@/components/CategorySelector.jsx";
-import {Col, Modal, Radio, Row} from "antd";
+import {Button, Col, Modal, Radio, Row} from "antd";
 import api from "@/api/axios.js";
+import "@/index.css";
 
 export default function Coupons() {
     const [selectedCategory, setSelectedCategory] = useState("all");
@@ -245,34 +246,32 @@ export default function Coupons() {
             </Row>
             {giftDetail && (
                 <Modal
+                    className="custom-login-modal"
                     open={giftDetailVisible}
                     onCancel={() => setGiftDetailVisible(false)}
-                    footer={[
-                        <button
-                            key="redeem"
-                            onClick={handleRedeemVoucher}
-                            disabled={!selectedPriceId}
-                            style={{
-                                backgroundColor: "#1890ff",
-                                color: "#fff",
-                                border: "none",
-                                padding: "10px 20px",
-                                fontWeight: 600,
-                                fontSize: "16px",
-                                borderRadius: 6,
-                                cursor: redeemLoading ? "not-allowed" : "pointer",
-                                opacity: redeemLoading ? 0.6 : 1,
-                                transition: "all 0.3s",
-                            }}
-                        >
-                            {redeemLoading ? "Đang xử lý..." : "🎁 Đổi điểm"}
-                        </button>,
-                    ]}
                     centered
                     width={700}
-                    title={<span style={{ fontWeight: 700, fontSize: 20 }}>{giftDetail.productNm}</span>}
+                    footer={
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                            <Button
+                                className="custom-cancel-btn"
+                                onClick={() => setGiftDetailVisible(false)}
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                className="login-submit"
+                                onClick={handleRedeemVoucher}
+                                disabled={!selectedPriceId || redeemLoading}
+                            >
+                                {redeemLoading ? "Đang xử lý..." : "🎁 Đổi điểm"}
+                            </Button>
+                        </div>
+                    }
+
                 >
-                    <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+                <h2><span style={{ fontWeight: 700, fontSize: 20 }}>{giftDetail.productNm}</span></h2>
+                <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
                         {/* LEFT: Ảnh voucher */}
                         <div style={{ flex: "1 1 220px", textAlign: "center" }}>
                             <img

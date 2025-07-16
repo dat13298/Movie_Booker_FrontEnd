@@ -25,13 +25,13 @@ export default function MovieFormModal({visible, onClose, onSubmit, initialValue
                 is18Plus: initialValues?.is18Plus ?? false,
                 movieCode: initialValues.movieCode || "",
                 trailerUrl: initialValues.trailerUrl || "",
-                image: initialValues.image
+                image: initialValues.imageUrl
                     ? [
                         {
                             uid: "-1",
                             name: "image.png",
                             status: "done",
-                            url: initialValues.image,
+                            url: initialValues.imageUrl,
                         },
                     ]
                     : [],
