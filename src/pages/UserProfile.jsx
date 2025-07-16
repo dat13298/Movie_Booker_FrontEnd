@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useContext} from "react";
 import {Typography, Divider, Table} from "antd";
 import {AuthContext} from "../auth/AuthProvider.jsx";
+import api from "@/api/axios.js";
 
 const {Title, Text} = Typography;
 
@@ -29,25 +30,21 @@ const UserProfile = () => {
 
         const fetchBookingHistory = async () => {
             try {
-                const response = await fetch("http://localhost:8080/api/bookings/my?page=0&size=100", {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${auth?.accessToken}`,
-                    },
-                });
+                const response = await api.get("/bookings/my?page=0&size=100");
 
-                if (!response.ok) throw new Error("Lỗi khi lấy lịch sử đặt vé");
+                const content = Array.isArray(response.data) ? response.data : response.data?.data ?? [];
 
-                const result = await response.json();
-
-                const mapped = result.content.map((item, index) => ({
+                const mapped = content.map((item, index) => ({
                     key: index + 1,
                     movie: item.movieTitle,
                     theater: item.theaterName,
-                    seat: item.seatCodes,
+                    seatCodes: item.seatCodes ?? [],
                     time: item.showTime,
+                    combos: item.combos ?? [],
+                    total: item.totalAmount,
+                    status: item.status,
                 }));
-                console.log("seat code", mapped);
+
                 setBookingHistory(mapped);
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -71,18 +68,70 @@ const UserProfile = () => {
     };
 
     const columns = [
-        {title: "Phim", dataIndex: "movie"},
-        {title: "Rạp", dataIndex: "theater"},
+        { title: "Phim", dataIndex: "movie" },
+        { title: "Rạp", dataIndex: "theater" },
         {
             title: "Ghế",
-            dataIndex: "seat",
-            render: (seats) =>
-                <span style={{color: "white", fontFamily: "monospace"}}>
-                {Array.isArray(seats) ? seats.join(", ") : seats}
+            dataIndex: "seatCodes",
+            render: (seats) => (
+                <span style={{ color: "white", fontFamily: "monospace" }}>
+                {Array.isArray(seats) && seats.length > 0
+                    ? [...new Set(seats)].join(", ")
+                    : "Chưa chọn"}
             </span>
+            ),
         },
-        {title: "Ngày giờ chiếu", dataIndex: "time"},
+        {
+            title: "Combo",
+            dataIndex: "combos",
+            render: (combos) =>
+                combos.length > 0 ? (
+                    <ul style={{ margin: 0, paddingLeft: 16, color: "white", fontFamily: "monospace" }}>
+                        {combos.map((c, idx) => (
+                            <li key={idx}>
+                                {c.quantity} x {c.name} ({c.unitPrice.toLocaleString()}đ)
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <span style={{ color: "#999", fontStyle: "italic" }}>Không có</span>
+                ),
+        },
+        {
+            title: "Ngày giờ chiếu",
+            dataIndex: "time",
+            render: (time) => (
+                <span style={{ color: "white", fontFamily: "monospace" }}>
+                {new Date(time).toLocaleString("vi-VN")}
+            </span>
+            ),
+        },
+        {
+            title: "Tổng tiền",
+            dataIndex: "total",
+            render: (amount) => (
+                <span style={{ color: "#E02828", fontWeight: "bold", fontFamily: "monospace" }}>
+                {amount.toLocaleString()}đ
+            </span>
+            ),
+        },
+        {
+            title: "Trạng thái",
+            dataIndex: "status",
+            render: (status) => (
+                <span
+                    style={{
+                        color: status === "SUCCESS" ? "#52c41a" : "#faad14",
+                        fontFamily: "monospace",
+                        textTransform: "capitalize",
+                    }}
+                >
+                {status}
+            </span>
+            ),
+        },
     ];
+
 
     return (
         <div style={{backgroundColor: "#0e0e0e", minHeight: "100vh", padding: "20px 50px"}}>
@@ -111,9 +160,9 @@ const UserProfile = () => {
                                     style={{...inputStyle, width: "auto"}}
                                 >
                                     <option value="">--</option>
-                                    <option value="Nam">Nam</option>
-                                    <option value="Nữ">Nữ</option>
-                                    <option value="Khác">Khác</option>
+                                    <option value="MALE">Nam</option>
+                                    <option value="FEMALE">Nữ</option>
+                                    <option value="OTHER">Khác</option>
                                 </select>
                             ) : (
                                 <input
@@ -155,16 +204,8 @@ const UserProfile = () => {
                             <button
                                 onClick={async () => {
                                     try {
-                                        const res = await fetch("http://localhost:8080/api/users/me", {
-                                            method: "PUT",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                                Authorization: `Bearer ${auth?.accessToken}`,
-                                            },
-                                            body: JSON.stringify(editableInfo),
-                                        });
-                                        if (!res.ok) throw new Error("Cập nhật thất bại");
-                                        alert("Cập nhật thành công!");
+                                        await api.put("/users/me", editableInfo);
+                                        updateAuth(auth, editableInfo);
                                         setIsEditing(false);
                                     } catch (err) {
                                         console.error(err);
