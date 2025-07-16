@@ -7,7 +7,7 @@ import "./SeatMap.css";
 import {useLocation} from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "@/auth/AuthProvider.jsx";
-
+import "@/index.css";
 export default function SeatMap({showTimeId}) {
     const [seats, setSeats] = useState([]);
     const [selected, setSelected] = useState(new Set());
@@ -23,13 +23,6 @@ export default function SeatMap({showTimeId}) {
     const currentUsername = userInfo?.username;
 
     if (!showtime) return <div>Không tìm thấy suất chiếu.</div>;
-
-    // Giả lập danh sách combo (sau này có thể gọi từ API)
-    // const combos = [
-    //     { id: 1, name: "Combo 1 (Bắp + Nước)", price: 45000 },
-    //     { id: 2, name: "Combo 2 (2 Nước)", price: 30000 },
-    //     { id: 3, name: "Combo VIP (Bắp lớn + 2 Nước)", price: 60000 },
-    // ];
 
     const totalCombo = useMemo(() => {
         return Object.entries(selectedCombos).reduce((sum, [id, qty]) => {
@@ -231,9 +224,9 @@ export default function SeatMap({showTimeId}) {
                         Giờ chiếu: <b>{new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</b>
                     </div>
                 </div>
-                <div className="countdown">
-                    Còn {mm}:{ss}
-                </div>
+                {/*<div className="countdown">*/}
+                {/*    Còn {mm}:{ss}*/}
+                {/*</div>*/}
             </div>
             <div className="screen"/>
             <div
@@ -274,13 +267,14 @@ export default function SeatMap({showTimeId}) {
             </div>
 
             <Button
-                style={{ marginTop: 12, marginRight: 12 }}
+                className="custom-cancel-btn"
                 onClick={() => setIsFoodModalOpen(true)}
             >
                 Chọn combo
             </Button>
             <Button
                 type="primary"
+                className="login-submit"
                 disabled={!selected.size}
                 style={{ marginTop: 12 }}
                 onClick={handlePayment}
@@ -288,15 +282,29 @@ export default function SeatMap({showTimeId}) {
                 Thanh toán
             </Button>
 
-
             <Modal
-                title="Chọn đồ ăn & combo"
+                className="custom-login-modal"
                 open={isFoodModalOpen}
+                footer={
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button
+                            className="custom-cancel-btn"
+                            onClick={() => setIsFoodModalOpen(false)}
+                        >
+                            Hủy
+                        </Button>
+                        <Button
+                            className="login-submit"
+                            onClick={() => setIsFoodModalOpen(false)}
+                        >
+                            Xác nhận
+                        </Button>
+                    </div>
+                }
+
                 onCancel={() => setIsFoodModalOpen(false)}
-                onOk={() => setIsFoodModalOpen(false)}
-                okText="Xác nhận"
-                cancelText="Hủy"
             >
+                <h2>Chọn đồ ăn & combo</h2>
                 {combos.map((combo) => (
                     <div key={combo.id} style={{ display: "flex", marginBottom: 16, gap: 12 }}>
                         <img

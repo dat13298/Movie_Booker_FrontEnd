@@ -12,6 +12,14 @@ const seatTypeColors = {
     ELDERLY: "#ce93d8",
 };
 
+const defaultPrices = {
+    VIP: 65000,
+    COUPLE: 140000,
+    NORMAL: 55000,
+    CHILD: 45000,
+    ELDERLY: 50000,
+};
+
 const seatStatusStyles = {
     AVAILABLE: { border: "2px solid green" },
     BOOKED: { border: "2px solid red", cursor: "not-allowed", opacity: 0.6 },
@@ -25,6 +33,7 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
     const [seats, setSeats] = useState([]);
     const [saving, setSaving] = useState(false);
     const [deletingSeatId, setDeletingSeatId] = useState(null);
+    const [seatTypePrices, setSeatTypePrices] = useState(defaultPrices);
 
     useEffect(() => {
         if (!open) {
@@ -59,10 +68,9 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
                         message.error("Lỗi khi xóa ghế khỏi hệ thống");
                     })
                     .finally(() => {
-                        setDeletingSeatId(null); // tắt loading
+                        setDeletingSeatId(null);
                     });
             } else {
-                // Ghế mới chưa lưu → chỉ xóa khỏi state
                 setSeats(prev => prev.filter(s => s.id !== existing.id));
             }
         } else {
@@ -71,21 +79,31 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
                 seatNumber: `${String.fromCharCode(65 + rowIdx)}${colIdx + 1}`,
                 screenId: showTime.screen.id,
                 showTimeId: showTime.id,
-                price: 10000,
+                price: seatTypePrices["NORMAL"],
                 seatType: "NORMAL",
                 status: "AVAILABLE",
                 rowIdx,
                 colIdx,
             };
+
             setSeats(prev => [...prev, newSeat]);
         }
     };
 
     const handleTypeChange = (seatId, seatType) => {
         setSeats((prev) =>
-            prev.map((s) => (s.id === seatId ? { ...s, seatType } : s))
+            prev.map((s) =>
+                s.id === seatId
+                    ? {
+                        ...s,
+                        seatType,
+                        price: seatTypePrices[seatType],
+                    }
+                    : s
+            )
         );
     };
+
 
     const handleSave = async () => {
         setSaving(true);
@@ -262,6 +280,37 @@ export default function SeatMapModal({ showTime, open, onClose, onSaved }) {
                 <Tag color="default">Click vào ô trống để thêm ghế</Tag>
                 <Tag color="default">Click vào ghế để xóa</Tag>
             </div>
+            <div style={{ marginTop: 24 }}>
+                <h4>Tuỳ chỉnh giá theo loại ghế</h4>
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    {Object.keys(seatTypePrices).map((type) => (
+                        <div key={type} style={{ display: "flex", flexDirection: "column" }}>
+                            <label style={{ color: seatTypeColors[type], fontWeight: 600 }}>
+                                {type}
+                            </label>
+                            <input
+                                type="number"
+                                min={0}
+                                value={seatTypePrices[type]}
+                                onChange={(e) =>
+                                    setSeatTypePrices((prev) => ({
+                                        ...prev,
+                                        [type]: Number(e.target.value),
+                                    }))
+                                }
+                                style={{
+                                    width: 100,
+                                    padding: "4px 8px",
+                                    borderRadius: 4,
+                                    border: "1px solid #ccc",
+                                    fontSize: 14,
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
         </Modal>
     );
 }

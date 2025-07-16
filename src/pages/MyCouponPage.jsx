@@ -8,7 +8,7 @@ import {
     Empty,
     Spin,
     message,
-    Tag, Modal, QRCode
+    Tag, Modal, QRCode, Button
 } from "antd";
 import api from "@/api/axios";
 import dayjs from "dayjs";
@@ -54,18 +54,31 @@ export const MyCouponPage = () => {
         if (coupon.status !== "UNUSED") return;
 
         Modal.confirm({
-            title: "⚠️ Xác nhận sử dụng coupon?",
+            title: (
+                <span style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
+      ⚠️ Xác nhận sử dụng coupon?
+    </span>
+            ),
+            className: "custom-login-modal",
             icon: null,
+            centered: true,
             content: (
-                <div style={{ marginTop: 8 }}>
+                <div className="modal-light-text" style={{ marginTop: 8 }}>
                     <p style={{ fontWeight: "bold" }}>{coupon.evoucherName}</p>
                     <p>Thương hiệu: {coupon.brandName}</p>
                     <p>Hạn sử dụng: {dayjs(coupon.expiryDate).format("DD/MM/YYYY")}</p>
                 </div>
             ),
-            centered: true,
             okText: "Sử dụng",
             cancelText: "Huỷ",
+            okButtonProps: {
+                className: "login-submit",
+                style: { minWidth: 100 },
+            },
+            cancelButtonProps: {
+                className: "custom-cancel-btn",
+                style: { minWidth: 100 },
+            },
             footer: (_, { OkBtn, CancelBtn }) => (
                 <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
                     <CancelBtn />
@@ -75,7 +88,7 @@ export const MyCouponPage = () => {
             onOk: async () => {
                 try {
                     const res = await api.post(`/v1/evouchers/${coupon.id}/use`);
-                    const { serial, code } = res.data.data; // fix tại đây
+                    const { serial, code } = res.data.data;
                     setQrCodeData({ serial, code });
                     message.success("Đã sử dụng coupon!");
                     fetchCoupons();
@@ -83,8 +96,6 @@ export const MyCouponPage = () => {
                     message.error("Không thể sử dụng coupon");
                 }
             }
-
-
         });
     };
 
@@ -167,9 +178,25 @@ export const MyCouponPage = () => {
             <Modal
                 open={!!qrCodeData}
                 onCancel={() => setQrCodeData(null)}
-                footer={null}
                 title="Mã QR của bạn"
                 centered
+                footer={
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button
+                            onClick={() => setQrCodeData(null)}
+                        >
+                            Đóng
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                navigator.clipboard.writeText(qrCodeData.code);
+                                message.success("Đã sao chép mã!");
+                            }}
+                        >
+                            Sao chép mã
+                        </Button>
+                    </div>
+                }
                 bodyStyle={{
                     display: "flex",
                     flexDirection: "column",
@@ -191,6 +218,7 @@ export const MyCouponPage = () => {
                     </>
                 )}
             </Modal>
+
         </Layout>
     );
 };

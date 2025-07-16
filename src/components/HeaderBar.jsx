@@ -51,11 +51,6 @@ const HeaderBar = () => {
         setLoginModalVisible(true);
     };
 
-    console.log("accessToken in localStorage:", localStorage.getItem("accessToken"));
-    console.log("auth.accessToken:", auth.accessToken);
-    console.log("isLoggedIn:", isLoggedIn);
-    console.log("userInfo:", userInfo);
-
     const userDropdown = (
         <Dropdown
             menu={{

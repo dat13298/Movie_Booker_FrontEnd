@@ -8,7 +8,7 @@ const Footer = () => {
             {/* Menu Links */}
             <div style={{ marginBottom: 24, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 24 }}>
                 <Link to="/policy" style={{ color: 'white' }}>Chính sách</Link>
-                <Link to="/schedule" style={{ color: 'white' }}>Lịch chiếu</Link>
+                <Link to="/show-time" style={{ color: 'white' }}>Lịch chiếu</Link>
                 <Link to="/ticket-price" style={{ color: 'white' }}>Giá vé</Link>
                 <Link to="/faq" style={{ color: 'white' }}>Hỏi đáp</Link>
                 <Link to="/contact" style={{ color: 'white' }}>Liên hệ</Link>
