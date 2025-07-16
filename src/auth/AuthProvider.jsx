@@ -25,16 +25,16 @@ export const AuthProvider = ({children}) => {
 
     /* 2. Giải mã userInfo khi accessToken thay đổi */
     const userInfo = useMemo(() => {
-        const raw = localStorage.getItem("userInfo");
-        return raw ? JSON.parse(raw) : (auth.accessToken ? parseJwt(auth.accessToken) : null);
+        return auth.accessToken ? parseJwt(auth.accessToken) : null;
     }, [auth.accessToken]);
+    console.log(userInfo);
 
     /* 3. Lắng nghe refresh-token thành công từ axios */
     useEffect(() => {
         const handler = (newAcc) =>
             setAuth((s) => ({ ...s, accessToken: newAcc }));
         emitter.on("tokenUpdated", handler);
-        emitter.on("logout", () => updateAuth());          // clear toàn cục
+        emitter.on("logout", () => updateAuth());
         return () => {
             emitter.off("tokenUpdated", handler);
             emitter.off("logout");

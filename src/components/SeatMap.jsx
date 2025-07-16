@@ -21,6 +21,7 @@ export default function SeatMap({showTimeId}) {
     const [combos, setCombos] = useState([]);
     const { userInfo } = useContext(AuthContext);
     const currentUsername = userInfo?.username;
+    const [isProcessing, setIsProcessing] = useState(false);
 
     if (!showtime) return <div>Không tìm thấy suất chiếu.</div>;
 
@@ -176,10 +177,26 @@ export default function SeatMap({showTimeId}) {
         .filter(Boolean)
         .join(", ");
 
+    const checkBookingStatus = async (bookingId, maxAttempts = 10, intervalMs = 1000) => {
+        for (let i = 0; i < maxAttempts; i++) {
+            try {
+                const { data } = await api.get(`/bookings/status/${bookingId}`);
+                if (typeof data === "string" && data.includes("CONFIRMED")) {
+                    return true;
+                }
+            } catch (e) {
+                console.warn("Error checking booking status:", e);
+            }
+
+            await new Promise((r) => setTimeout(r, intervalMs));
+        }
+        return false;
+    };
+
     const handlePayment = async () => {
         const seatIds = [...selected];
         if (!seatIds.length) return;
-
+        setIsProcessing(true);
         try {
             const comboList = Object.entries(selectedCombos)
                 .filter(([_, qty]) => qty > 0)
@@ -191,15 +208,21 @@ export default function SeatMap({showTimeId}) {
             const bookingRes = await api.post("/bookings/create", {
                 showTimeId: parseInt(showTimeId),
                 seatIds,
-                comboItems: comboList, // ✅ key đúng như backend yêu cầu
+                comboItems: comboList,
             });
 
 
             const { bookingId, amount } = bookingRes.data;
 
+            const isConfirmed = await checkBookingStatus(bookingId);
+            if (!isConfirmed) {
+                message.error("Đặt vé thất bại. Vui lòng thử lại sau.");
+                return;
+            }
+
             const paymentRes = await api.post("/payment/create", {
                 bookingId,
-                returnUrl: window.location.origin + "/payment-result"
+                returnUrl: `${window.location.origin}/vnpay-return`
             });
 
             const { paymentUrl } = paymentRes.data;
@@ -209,6 +232,8 @@ export default function SeatMap({showTimeId}) {
         } catch (e) {
             console.error("Lỗi khi thanh toán:", e);
             message.error("Không thể thanh toán. Vui lòng thử lại.");
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -231,7 +256,7 @@ export default function SeatMap({showTimeId}) {
             <div className="screen"/>
             <div
                 className="seat-map"
-                style={{gridTemplateColumns: `repeat(${colMax}, 48px)`}}
+                style={{ gridTemplateColumns: `repeat(${colMax + 1}, 48px)` }}
             >
                 {seats.map((seat) => (
                     <div
@@ -252,9 +277,13 @@ export default function SeatMap({showTimeId}) {
             <div className="legend">
                 <Tag color="#4b5563">Đã đặt</Tag>
                 <Tag color="#60a5fa">Bạn chọn</Tag>
-                <Tag color="#374151">Thường</Tag>
+                <Tag color="#2563eb">Thường</Tag>
+
                 <Tag color="#f59e0b">VIP</Tag>
                 <Tag color="#e11d48">Đôi</Tag>
+                <Tag color="#22c55e">Trẻ em</Tag>
+                <Tag color="#a855f7">Người già</Tag>
+
             </div>
 
             <div style={{ color: "#fff", marginTop: 16, fontSize: 16 }}>
@@ -278,6 +307,7 @@ export default function SeatMap({showTimeId}) {
                 disabled={!selected.size}
                 style={{ marginTop: 12 }}
                 onClick={handlePayment}
+                loading={isProcessing}
             >
                 Thanh toán
             </Button>
