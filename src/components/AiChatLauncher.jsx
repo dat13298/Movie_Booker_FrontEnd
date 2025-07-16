@@ -6,8 +6,15 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { fetchGeminiResponse } from "../services/geminiService";
-import { movies } from "../data/fakeMovies";
-import { slugify } from "@/utils/slugify";
+import { getAllMovies } from "@/data/movieService.js";
+import removeAccents from 'remove-accents';
+
+const normalize = (str) =>
+    removeAccents(str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
 
 export default function ChatWidget() {
     const [open, setOpen] = useState(false);
@@ -16,24 +23,33 @@ export default function ChatWidget() {
     const [loading, setLoading] = useState(false);
     const historyRef = useRef(null);
     const navigate = useNavigate();
+    const [movies, setMovies] = useState([]);
 
     const sampleQuestions = [
-        "Làm sao để đặt vé?",
-        "Phim nào đang chiếu hôm nay?",
+        // "Làm sao để đặt vé?",
+        "Phim nào đang chiếu?",
         "Giá vé bao nhiêu?",
         "Tôi có được hoàn vé không?",
-        "Trung tâm có ghế Couple không?",
-        "Lịch chiếu hôm nay thế nào?",
+        // "Trung tâm có ghế Couple không?",
+        // "Lịch chiếu hôm nay thế nào?",
     ];
+
+    useEffect(() => {
+        getAllMovies().then((data) => {
+            setMovies(data);
+        }).catch(() => {
+            console.warn("Không thể tải danh sách phim");
+        });
+    }, []);
 
     useEffect(() => {
         if (historyRef.current)
             historyRef.current.scrollTop = historyRef.current.scrollHeight;
     }, [messages, loading]);
 
-    const sendMessage = async (text = null) => {
-        const userText = text || input;
-        if (!userText.trim()) return;
+    const sendMessage = async (textInput = null) => {
+        const userText = String(textInput || input || "").trim();
+        if (!userText) return;
 
         setInput("");
         setMessages((prev) => [...prev, { sender: "user", text: userText }]);
@@ -41,19 +57,73 @@ export default function ChatWidget() {
 
         try {
             const res = await fetchGeminiResponse(userText);
+
+            const userMovie = normalize(res.movie);
             const found = movies.find((m) =>
-                res.movie?.toLowerCase().includes(m.name.toLowerCase())
+                normalize(m.title) === userMovie || normalize(m.title).includes(userMovie)
             );
 
-            if (res.intent === "booking" && found) {
+            // Nếu người dùng muốn đặt vé
+            if (res.intent === "booking") {
+                if (!found) {
+                    setMessages((prev) => [
+                        ...prev,
+                        {
+                            sender: "ai",
+                            text: `Xin lỗi, hiện tại chúng tôi không tìm thấy phim "${res.movie}" trong hệ thống. Bạn vui lòng kiểm tra lại tên phim hoặc chọn phim đang chiếu nhé.`,
+                        },
+                    ]);
+                    return;
+                }
+
+                if (found.movieStatus !== "NOW_SHOWING") {
+                    setMessages((prev) => [
+                        ...prev,
+                        {
+                            sender: "ai",
+                            text: `Phim "${found.title}" hiện vẫn chưa được khởi chiếu. Vui lòng quay lại sau để đặt vé nhé!`,
+                        },
+                    ]);
+                    return;
+                }
+
                 setMessages((prev) => [
                     ...prev,
-                    { sender: "ai", text: `Đang chuyển đến trang đặt vé cho phim "${found.name}"…` },
+                    {
+                        sender: "ai",
+                        text: `Đang chuyển đến trang đặt vé cho phim "${found.title}"…`,
+                    },
                 ]);
-                setTimeout(() => navigate(`/booking/${slugify(found.name)}`), 1500);
+                setTimeout(() => navigate(`/movie/${found.id}`, { state: { movie: found } }), 1500);
                 return;
             }
 
+            // Nếu người dùng muốn xem danh sách phim đang chiếu
+            if (res.intent === "showing_list") {
+                const nowShowing = movies.filter(m => m.movieStatus === "NOW_SHOWING");
+
+                if (nowShowing.length === 0) {
+                    setMessages((prev) => [
+                        ...prev,
+                        {
+                            sender: "ai",
+                            text: "Hiện tại không có phim nào đang chiếu. Vui lòng quay lại sau nhé!",
+                        },
+                    ]);
+                } else {
+                    const movieTitles = nowShowing.map((m) => `- **${m.title}**`).join("\n");
+                    setMessages((prev) => [
+                        ...prev,
+                        {
+                            sender: "ai",
+                            text: `Dưới đây là danh sách phim đang chiếu:\n\n${movieTitles}`,
+                        },
+                    ]);
+                }
+                return;
+            }
+
+            // Nếu là các câu hỏi khác
             setMessages((prev) => [
                 ...prev,
                 {
@@ -61,7 +131,8 @@ export default function ChatWidget() {
                     text: res.reply || "Tôi chưa rõ bạn cần gì, bạn có thể hỏi lại nhé!",
                 },
             ]);
-        } catch {
+        } catch (error) {
+            console.warn("Lỗi khi xử lý tin nhắn:", error);
             setMessages((prev) => [
                 ...prev,
                 { sender: "ai", text: "Đã xảy ra lỗi khi phản hồi. Vui lòng thử lại." },
@@ -70,6 +141,7 @@ export default function ChatWidget() {
             setLoading(false);
         }
     };
+
 
     return (
         <>
@@ -128,26 +200,31 @@ export default function ChatWidget() {
                                 color: "#fff",
                                 padding: "12px 16px",
                                 borderRadius: "16px 16px 0 0",
-                                fontWeight: "bold",
                                 display: "flex",
-                                justifyContent: "space-between",
                                 alignItems: "center",
+                                justifyContent: "space-between",
                             }}
                         >
-                            Trợ lý AI Đặt Vé
+                            <span style={{ fontWeight: "bold", fontSize: 16 }}>Trợ lý AI Đặt Vé</span>
                             <button
                                 onClick={() => setOpen(false)}
                                 style={{
                                     background: "transparent",
                                     border: "none",
                                     color: "#fff",
-                                    fontSize: 18,
+                                    fontSize: 20,
                                     cursor: "pointer",
+                                    padding: 0,
+                                    lineHeight: 1,
+                                    width: "auto",
+                                    minWidth: "unset",
+                                    height: "auto",
                                 }}
                             >
                                 ✕
                             </button>
                         </div>
+
 
                         {/* Gợi ý câu hỏi */}
                         <div style={{ padding: "8px 12px", display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -242,7 +319,13 @@ export default function ChatWidget() {
                             <input
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        sendMessage(input);
+                                    }
+                                }}
+
                                 placeholder="Nhập câu hỏi…"
                                 style={{
                                     flex: 1,
@@ -255,7 +338,7 @@ export default function ChatWidget() {
                                 }}
                             />
                             <button
-                                onClick={sendMessage}
+                                onClick={() => sendMessage(input)}
                                 style={{
                                     padding: "10px 20px",
                                     borderRadius: 12,
