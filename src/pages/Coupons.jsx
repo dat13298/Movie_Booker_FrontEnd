@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import CategorySelector from "@/components/CategorySelector.jsx";
-import {Button, Col, Modal, Radio, Row} from "antd";
+import {Button, Col, message, Modal, Radio, Row} from "antd";
 import api from "@/api/axios.js";
-import "@/index.css";
+import "@/index.css";import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/auth/AuthProvider.jsx";
 
 export default function Coupons() {
     const [selectedCategory, setSelectedCategory] = useState("all");
@@ -13,6 +15,17 @@ export default function Coupons() {
     const [giftDetail, setGiftDetail] = useState(null);
     const [selectedPriceId, setSelectedPriceId] = useState(null);
     const [redeemLoading, setRedeemLoading] = useState(false);
+    const { userInfo } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!userInfo) {
+            message.warning("Vui lòng đăng nhập để sử dụng chức năng này", 2);
+            setTimeout(() => {
+                navigate("/");
+            }, 2000);
+        }
+    }, [userInfo, navigate]);
 
     useEffect(() => {
         if (selectedCategory === "all") {
@@ -23,6 +36,7 @@ export default function Coupons() {
         api.get("/partner/brands/by-category", {
             params: { categoryId: selectedCategory },
         }).then((res) => {
+            console.log("log coupon",res.data);
             setBrands(res.data.data || []);
         });
     }, [selectedCategory]);

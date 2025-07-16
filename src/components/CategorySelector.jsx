@@ -9,18 +9,31 @@ const CategorySelector = ({ selectedId, onSelect }) => {
 
     useEffect(() => {
         api.get("/partner/categories").then((res) => {
-            const fetched = res.data.data.map((cat) => ({
+            const raw = res.data?.data;
+
+            if (!Array.isArray(raw)) {
+                console.warn("Dữ liệu category không hợp lệ:", raw);
+                setCategories([{ id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" }]);
+                return;
+            }
+
+            const fetched = raw.map((cat) => ({
                 id: cat.categoryId,
                 name: cat.categoryNm,
                 img: cat.categoryImg || "https://via.placeholder.com/60?text=?",
             }));
+
             setCategories([
                 { id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" },
                 ...fetched,
             ]);
             console.log(res);
+        }).catch((err) => {
+            console.error("Lỗi lấy categories:", err);
+            setCategories([{ id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" }]);
         });
     }, []);
+
 
     return (
         <div style={{ display: "flex", gap: "20px", padding: "10px", overflowX: "auto" }}>

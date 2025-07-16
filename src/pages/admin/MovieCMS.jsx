@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Table, Button, Space, Popconfirm, message, Tag, Input } from "antd";
+import {Table, Button, Space, Popconfirm, message, Tag, Input, Modal} from "antd";
 import dayjs from "dayjs";
 import api from "@/api/axios";
 import MovieFormModal from "@/components/admin/MovieFormModal";
@@ -18,6 +18,21 @@ export default function MovieCMS() {
         is18Plus: null,
         status: null,
     });
+    const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+    const [movieToDelete, setMovieToDelete] = useState(null);
+
+    const showDeleteConfirm = (movie) => {
+        setMovieToDelete(movie);
+        setDeleteConfirmVisible(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!movieToDelete) return;
+        await handleDelete(movieToDelete.id);
+        setDeleteConfirmVisible(false);
+        setMovieToDelete(null);
+    };
+
 
     const fetchMovies = useCallback(
         async (page = 1, size = 10, kw = "", f = {}) => {
@@ -185,17 +200,11 @@ export default function MovieCMS() {
             render: (_, record) => (
                 <Space>
                     <Button onClick={() => { setEditingMovie(record); setModalVisible(true); }}>Sửa</Button>
-                    <Popconfirm
-                        title="Bạn có chắc chắn muốn xóa phim này?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button danger>Xóa</Button>
-                    </Popconfirm>
+                    <Button danger onClick={() => showDeleteConfirm(record)}>Xóa</Button>
                 </Space>
             ),
-        },
+        }
+
     ];
 
     /* ─────────── render ─────────── */
@@ -232,6 +241,21 @@ export default function MovieCMS() {
                 onSubmit={handleSubmit}
                 initialValues={editingMovie}
             />
+            <Modal
+                open={deleteConfirmVisible}
+                title="Xác nhận xóa phim"
+                centered
+                onCancel={() => setDeleteConfirmVisible(false)}
+                footer={
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                        <Button onClick={() => setDeleteConfirmVisible(false)}>Hủy</Button>
+                        <Button danger type="primary" onClick={confirmDelete}>Xóa</Button>
+                    </div>
+                }
+            >
+                <p>Bạn có chắc chắn muốn xóa phim <strong>{movieToDelete?.title}</strong>?</p>
+            </Modal>
+
         </>
     );
 }
