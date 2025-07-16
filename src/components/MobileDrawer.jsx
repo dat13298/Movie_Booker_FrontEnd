@@ -1,22 +1,23 @@
 // MobileDrawer.jsx (updated)
-import React, { useContext } from 'react';
-import { Drawer } from 'antd';
-import { AuthContext } from '../auth/AuthProvider.jsx';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, {useContext} from 'react';
+import {Drawer} from 'antd';
+import {AuthContext} from '../auth/AuthProvider.jsx';
+import {useNavigate, useLocation} from 'react-router-dom';
 
-const MobileDrawer = ({ visible, onClose, onLoginClick, onLogout }) => {
-    const { auth } = useContext(AuthContext);
+const MobileDrawer = ({visible, onClose, onLoginClick, onLogout}) => {
+    const {auth} = useContext(AuthContext);
     const isLoggedIn = !!auth?.accessToken;
     const navigate = useNavigate();
     const location = useLocation();
 
     const menuItems = [
-        { path: '/', label: 'TRANG CHỦ' },
-        { path: '/show-time', label: 'LỊCH CHIẾU' },
-        { path: '/movies', label: 'PHIM' },
-        { path: '/theaters', label: 'RẠP' },
-        { path: '/ticket-price', label: 'GIÁ VÉ' },
-        { path: '/coupons', label: 'ĐỔI ĐIỂM' },
+        {path: '/', label: 'TRANG CHỦ'},
+        {path: '/show-time', label: 'LỊCH CHIẾU'},
+        {path: '/movies', label: 'PHIM'},
+        {path: '/theaters', label: 'RẠP'},
+        {path: '/ticket-price', label: 'GIÁ VÉ'},
+        {path: '/coupons', label: 'ĐỔI ĐIỂM'},
+        {path: '/profile', label: 'THÔNG TIN CÁ NHÂN'}
     ];
 
     return (
@@ -35,9 +36,9 @@ const MobileDrawer = ({ visible, onClose, onLoginClick, onLogout }) => {
                 },
             }}
         >
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
                 {/* Menu list */}
-                <div style={{ display: 'flex', flexDirection: 'column', padding: '16px' }}>
+                <div style={{display: 'flex', flexDirection: 'column', padding: '16px'}}>
                     {menuItems.map((item) => (
                         <div
                             key={item.path}
@@ -64,7 +65,7 @@ const MobileDrawer = ({ visible, onClose, onLoginClick, onLogout }) => {
                 </div>
 
                 {/* Auth buttons */}
-                <div style={{ padding: 16, display: 'flex', justifyContent: 'center', gap: 12 }}>
+                <div style={{padding: 16, display: 'flex', justifyContent: 'center', gap: 12}}>
                     {isLoggedIn ? (
                         <button
                             style={{

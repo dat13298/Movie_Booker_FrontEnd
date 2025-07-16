@@ -5,7 +5,7 @@ import {AuthContext} from "../auth/AuthProvider.jsx";
 const {Title, Text} = Typography;
 
 const UserProfile = () => {
-    const {auth, userInfo} = useContext(AuthContext);
+    const {auth, userInfo, updateAuth} = useContext(AuthContext);
     const [bookingHistory, setBookingHistory] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editableInfo, setEditableInfo] = useState({
