@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { Modal, Input, Button, Typography, Form, message } from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import api from "../api/axios";
@@ -9,7 +9,7 @@ import {AuthContext} from "@/auth/AuthProvider.jsx";
 const { Title, Text } = Typography;
 
 export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegister, onForgotPassword }) {
-
+    const [loading, setLoading] = useState(false);
     const { updateAuth } = useContext(AuthContext);
     const [form] = Form.useForm();
 
@@ -19,6 +19,7 @@ export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegiste
     }, [open]);
 
     const handleSubmit = async (values) => {
+        setLoading(true);
         try {
             const res = await api.post("/auth/login", {
                 username: values.username,
@@ -37,6 +38,8 @@ export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegiste
 
         } catch (err) {
             message.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -106,6 +109,7 @@ export default function Login({ open, onClose, onLoginSuccess, onSwitchToRegiste
                     htmlType="submit"
                     size="large"
                     className="login-submit"
+                    loading={loading}
                     block
                 >
                     Đăng nhập

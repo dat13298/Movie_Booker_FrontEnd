@@ -13,7 +13,7 @@ const CategorySelector = ({ selectedId, onSelect }) => {
 
             if (!Array.isArray(raw)) {
                 console.warn("Dữ liệu category không hợp lệ:", raw);
-                setCategories([{ id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" }]);
+                setCategories([]);
                 return;
             }
 
@@ -23,14 +23,11 @@ const CategorySelector = ({ selectedId, onSelect }) => {
                 img: cat.categoryImg || "https://via.placeholder.com/60?text=?",
             }));
 
-            setCategories([
-                { id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" },
-                ...fetched,
-            ]);
+            setCategories(fetched);
             console.log(res);
         }).catch((err) => {
             console.error("Lỗi lấy categories:", err);
-            setCategories([{ id: "all", name: "Tất cả", img: "https://via.placeholder.com/60?text=All" }]);
+            setCategories([]);
         });
     }, []);
 

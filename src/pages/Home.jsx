@@ -8,7 +8,7 @@ const Home = () => {
     return (
         <div style={{ backgroundColor: "#0e0e0e", minHeight: "100vh", padding: 20 }}>
             <Banner />
-            <MovieSlider />
+            {/*<MovieSlider />*/}
             <MovieSections />
         </div>
     );

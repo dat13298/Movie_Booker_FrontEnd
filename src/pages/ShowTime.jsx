@@ -19,6 +19,7 @@ const ShowTime = () => {
         try {
             const res = await api.get("/show-times", { params: { page: 0, size: 1000 } });
             const content = res.data.content || [];
+            console.log("content",content);
 
             // ✅ group by date (yyyy-MM-dd) from startTime
             const grouped = {};

@@ -22,6 +22,7 @@ export const MyCouponPage = () => {
     const [usedCoupons, setUsedCoupons] = useState([]);
     const [loading, setLoading] = useState(false);
     const [qrCodeData, setQrCodeData] = useState(null);
+    const [loadingCouponId, setLoadingCouponId] = useState(null);
 
     const fetchCoupons = async () => {
         setLoading(true);
@@ -73,6 +74,7 @@ export const MyCouponPage = () => {
             cancelText: "Huỷ",
             okButtonProps: {
                 className: "login-submit",
+                loading: loadingCouponId === coupon.id,
                 style: { minWidth: 100 },
             },
             cancelButtonProps: {
@@ -86,6 +88,7 @@ export const MyCouponPage = () => {
                 </div>
             ),
             onOk: async () => {
+                setLoadingCouponId(coupon.id);
                 try {
                     const res = await api.post(`/v1/evouchers/${coupon.id}/use`);
                     const { serial, code } = res.data.data;
@@ -94,6 +97,8 @@ export const MyCouponPage = () => {
                     fetchCoupons();
                 } catch {
                     message.error("Không thể sử dụng coupon");
+                } finally {
+                    setLoadingCouponId(null);
                 }
             }
         });
@@ -108,7 +113,7 @@ export const MyCouponPage = () => {
                     <Col xs={24} sm={18} md={14} lg={12} xl={10} key={coupon.id}>
                         <Card
                             hoverable={coupon.status === "UNUSED"}
-                            onClick={() => handleUseCoupon(coupon)}
+                            onClick={() => loadingCouponId ? null : handleUseCoupon(coupon)}
                             style={{
                                 cursor: coupon.status === "UNUSED" ? "pointer" : "not-allowed",
                                 opacity: coupon.status === "UNUSED" ? 1 : 0.6,

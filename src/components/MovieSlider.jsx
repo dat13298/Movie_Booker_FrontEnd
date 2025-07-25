@@ -4,7 +4,7 @@ import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
 const MovieSlider = () => {
-  const movies = [/* danh sách phim */];
+  const movies = [];
 
   return (
     <Swiper
@@ -14,12 +14,12 @@ const MovieSlider = () => {
       spaceBetween={20}
       loop={true}
     >
-      {movies.map((movie, index) => (
-        <SwiperSlide key={index}>
-          <img src={movie.image} alt={movie.title} />
-          <p>{movie.title}</p>
-        </SwiperSlide>
-      ))}
+      {/*{movies.map((movie, index) => (*/}
+      {/*  <SwiperSlide key={index}>*/}
+      {/*    <img src={movie.image} alt={movie.title} />*/}
+      {/*    <p>{movie.title}</p>*/}
+      {/*  </SwiperSlide>*/}
+      {/*))}*/}
     </Swiper>
   );
 };

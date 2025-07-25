@@ -40,10 +40,7 @@ function Section({ title, data }) {
 }
 
 export default function MovieSections() {
-    const [nowShowing, setNowShowing] = useState([]);
-    const [comingSoon, setComingSoon] = useState([]);
-    const [otherCategories, setOtherCategories] = useState([]); // future use
-
+    const [movies, setMovies] = useState([]);
     useEffect(() => {
         fetchMovies();
     }, []);
@@ -51,18 +48,15 @@ export default function MovieSections() {
     const fetchMovies = async () => {
         try {
             const res = await api.get("/movies");
-            const movies = res.data.content;
-
-            const now = movies.filter(m => m.movieStatus === "NOW_SHOWING");
-            const coming = movies.filter(m => m.movieStatus === "COMING_SOON");
-            // bạn có thể thêm phân loại khác nếu backend có thêm
-
-            setNowShowing(now);
-            setComingSoon(coming);
+            const data = res.data.content || [];
+            setMovies(data);
+            console.log(data);
         } catch (e) {
-            console.error("Lỗi khi fetch movies: ", e);
+            console.error("❌ API error", e);
         }
     };
+    const nowShowing = movies.filter((m) => m.movieStatus === "NOW_SHOWING");
+    const comingSoon = movies.filter((m) => m.movieStatus === "COMING_SOON");
 
     return (
         <div className="movie-sections">

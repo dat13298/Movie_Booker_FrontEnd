@@ -1,30 +1,36 @@
-import React, { useState } from "react";
-import { Modal, Form, Input, Button, Typography, message } from "antd";
+import React, {useState} from "react";
+import {Modal, Form, Input, Button, Typography, message} from "antd";
 import api from "../api/axios";
 import "../index.css";
 
-const { Title, Text } = Typography;
+const {Title, Text} = Typography;
 
-export default function ForgotPassword({ open, onClose, onBackToLogin }) {
+export default function ForgotPassword({open, onClose, onBackToLogin}) {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
     const [requestId, setRequestId] = useState("");
     const [formStep1] = Form.useForm();
     const [formStep2] = Form.useForm();
+    const [loadingSendEmail, setLoadingSendEmail] = useState(false);
+    const [loadingResetPassword, setLoadingResetPassword] = useState(false);
 
-    const handleSendEmail = async ({ email }) => {
+    const handleSendEmail = async ({email}) => {
+        setLoadingSendEmail(true);
         try {
-            const res = await api.post("/reset-password/request-reset-password", { email });
+            const res = await api.post("/reset-password/request-reset-password", {email});
             setEmail(email);
             setRequestId(res.data.data?.idRequestResetPassword);
             message.success("Mã OTP đã được gửi đến email");
             setStep(2);
         } catch (err) {
             message.error(err.response?.data?.message || "Không thể gửi mã OTP");
+        } finally {
+            setLoadingSendEmail(false);
         }
     };
 
-    const handleResetPassword = async ({ otp, newPassword }) => {
+    const handleResetPassword = async ({otp, newPassword}) => {
+        setLoadingResetPassword(true);
         try {
             await api.post("/reset-password/update-new-password", {
                 email,
@@ -40,6 +46,8 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
             onBackToLogin?.();
         } catch (err) {
             message.error(err.response?.data?.message || "Đặt lại mật khẩu thất bại");
+        } finally {
+            setLoadingResetPassword(false);
         }
     };
 
@@ -76,14 +84,20 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
                             label="Email"
                             className="login-input"
                             rules={[
-                                { required: true, message: "Vui lòng nhập email" },
-                                { type: "email", message: "Email không hợp lệ" },
+                                {required: true, message: "Vui lòng nhập email"},
+                                {type: "email", message: "Email không hợp lệ"},
                             ]}
                         >
-                            <Input placeholder="Nhập email đã đăng ký" size="large" />
+                            <Input placeholder="Nhập email đã đăng ký" size="large"/>
                         </Form.Item>
 
-                        <Button htmlType="submit" size="large" className="login-submit" block>
+                        <Button
+                            htmlType="submit"
+                            size="large"
+                            className="login-submit"
+                            block
+                            loading={loadingSendEmail}
+                        >
                             Gửi mã xác thực
                         </Button>
                     </>
@@ -95,9 +109,9 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
                             name="otp"
                             label="Mã OTP"
                             className="login-input"
-                            rules={[{ required: true, message: "Vui lòng nhập mã OTP" }]}
+                            rules={[{required: true, message: "Vui lòng nhập mã OTP"}]}
                         >
-                            <Input placeholder="Nhập mã OTP" size="large" />
+                            <Input placeholder="Nhập mã OTP" size="large"/>
                         </Form.Item>
 
                         <Form.Item
@@ -105,11 +119,11 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
                             label="Mật khẩu mới"
                             className="login-input"
                             rules={[
-                                { required: true, message: "Vui lòng nhập mật khẩu mới" },
-                                { min: 8, message: "Ít nhất 8 ký tự" },
+                                {required: true, message: "Vui lòng nhập mật khẩu mới"},
+                                {min: 8, message: "Ít nhất 8 ký tự"},
                             ]}
                         >
-                            <Input.Password placeholder="Mật khẩu mới" size="large" />
+                            <Input.Password placeholder="Mật khẩu mới" size="large"/>
                         </Form.Item>
 
                         <Form.Item
@@ -118,8 +132,8 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
                             className="login-input"
                             dependencies={["newPassword"]}
                             rules={[
-                                { required: true, message: "Vui lòng xác nhận mật khẩu" },
-                                ({ getFieldValue }) => ({
+                                {required: true, message: "Vui lòng xác nhận mật khẩu"},
+                                ({getFieldValue}) => ({
                                     validator(_, value) {
                                         return value === getFieldValue("newPassword")
                                             ? Promise.resolve()
@@ -128,14 +142,17 @@ export default function ForgotPassword({ open, onClose, onBackToLogin }) {
                                 }),
                             ]}
                         >
-                            <Input.Password placeholder="Nhập lại mật khẩu" size="large" />
+                            <Input.Password placeholder="Nhập lại mật khẩu" size="large"/>
                         </Form.Item>
 
-                        <Button htmlType="submit" size="large" className="login-submit" block>
+                        <Button htmlType="submit" size="large" className="login-submit" loading={loadingResetPassword} block>
                             Đặt lại mật khẩu
                         </Button>
 
-                        <Button type="link" block onClick={() => { formStep2.resetFields(); setStep(1); }}>
+                        <Button type="link" block onClick={() => {
+                            formStep2.resetFields();
+                            setStep(1);
+                        }}>
                             Quay lại bước nhập email
                         </Button>
                     </>

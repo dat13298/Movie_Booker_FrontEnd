@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Modal,
     Input,
@@ -19,6 +19,7 @@ const { Option } = Select;
 
 export default function Register({ open, onClose, onSwitchToLogin }) {
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!open) return;
@@ -30,6 +31,7 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
 
 
     const handleSubmit = async (values) => {
+        setLoading(true);
         const payload = {
             ...values,
             DoB: values.DoB.format("YYYY-MM-DD"),
@@ -49,6 +51,8 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
             const msg = errorData?.message;
 
             message.error(msg || "Đăng ký thất bại!");
+        } finally {
+            setLoading(false);
         }
 
 
@@ -191,6 +195,7 @@ export default function Register({ open, onClose, onSwitchToLogin }) {
                     htmlType="submit"
                     size="large"
                     className="login-submit"
+                    loading={loading}
                     block
                 >
                     Đăng ký
