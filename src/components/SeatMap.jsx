@@ -23,7 +23,9 @@ export default function SeatMap({showTimeId}) {
     const currentUsername = userInfo?.username;
     const [isProcessing, setIsProcessing] = useState(false);
 
-    if (!showtime) return <div>Không tìm thấy suất chiếu.</div>;
+    if (!showtime) {
+        return <div>Không tìm thấy suất chiếu.</div>;
+    }
 
     const totalCombo = useMemo(() => {
         return Object.entries(selectedCombos).reduce((sum, [id, qty]) => {
@@ -64,6 +66,21 @@ export default function SeatMap({showTimeId}) {
             }
         })();
     }, [showTimeId]);
+
+    useEffect(() => {
+        const listener = (e) => {
+            if (e.key === "seat-selected") {
+                setSelected(new Set(JSON.parse(e.newValue)));
+            }
+        };
+        window.addEventListener("storage", listener);
+        return () => window.removeEventListener("storage", listener);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("seat-selected", JSON.stringify([...selected]));
+    }, [selected]);
+
 
     useEffect(() => {
         const fetchCombos = async () => {

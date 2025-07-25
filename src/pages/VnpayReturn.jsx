@@ -39,10 +39,14 @@ export default function VnpayReturn() {
                 status={isSuccess ? "success" : "error"}
                 title={
                     <span style={{ color: "#ffffff" }}>
-            {isSuccess ? "Thanh toán thành công!" : "Thanh toán thất bại!"}
-        </span>
+                    {isSuccess ? "Thanh toán thành công!" : "Thanh toán thất bại!"}
+                </span>
                 }
-                subTitle={<span style={{ color: "#cccccc" }}>{status}</span>}
+                subTitle={
+                    isSuccess ? (
+                        <span style={{ color: "#cccccc" }}>{status}</span>
+                    ) : null
+                }
                 extra={[
                     <Button
                         key="home"
@@ -63,7 +67,7 @@ export default function VnpayReturn() {
                     )
                 ]}
             />
-
         </div>
     );
+
 }
